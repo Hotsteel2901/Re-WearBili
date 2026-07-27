@@ -22,8 +22,8 @@ android {
     defaultConfig {
         applicationId = "cn.spacexc.wearbili.remake"
         minSdk = 21
-        targetSdk = 35
-        compileSdk = 35
+        targetSdk = 36
+        compileSdk = 36
         versionCode = 47
         versionName = "Atlas 阿特拉斯"
         vectorDrawables {

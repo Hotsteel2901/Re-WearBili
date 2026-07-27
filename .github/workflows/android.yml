@@ -1,26 +1,205 @@
-name: Android CI
+name: Build APK
 
+# 该 workflow 用于自动构建 Re-WearBili APK
+# 触发条件：推送到 main 分支、提交 PR、推送 v* 标签、手动触发
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: '构建类型 (debug/release/both)'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - debug
+          - release
+          - both
+
+# 申明 workflow 所需权限
+permissions:
+  contents: write   # 用于在 tag 推送时创建 Release
+  packages: read
+
+# Workflow 级环境变量
+env:
+  # Gradle 性能与缓存相关
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true -Dorg.gradle.parallel=true"
 
 jobs:
   build:
-
+    name: Build APK
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
-    - uses: actions/checkout@v3
-    - name: set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      # 1. 检出代码 (使用 fetch-depth: 0 以获取完整历史, 便于生成 changelog)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
+      # 2. 配置 JDK 17 (项目要求 JVM_TARGET=17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # 3. 配置 Android SDK (ubuntu-latest 已预装, 这里主要是接受许可 & 校验)
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            tools
+            platform-tools
+            build-tools;36.0.0
+            platforms;android-36
+
+      # 4. 缓存 Gradle 用户目录 (与 setup-java 的 cache 互补)
+      - name: Cache Gradle Home
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/native
+          key: gradle-home-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          restore-keys: |
+            gradle-home-${{ runner.os }}-
+
+      # 5. 授予 gradlew 可执行权限
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # 6. (可选) 配置签名 keystore —— 仅在提供了对应 secrets 时生效
+      #    如果未配置 secrets, release 构建将使用项目默认的 debug 签名
+      - name: Decode signing keystore (if provided)
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && env.SIGNING_KEYSTORE_BASE64 != '' }}
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p $HOME/.android
+          echo "${SIGNING_KEYSTORE_BASE64}" | base64 --decode > $HOME/.android/release.keystore
+          echo "Keystore decoded to $HOME/.android/release.keystore"
+          ls -la $HOME/.android/release.keystore
+
+      # 7. 决定本次构建的类型 (debug / release / both)
+      - name: Resolve build type
+        id: resolve_build_type
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "build_type=${{ inputs.build_type }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ startsWith(github.ref, 'refs/tags/v') }}" = "true" ]; then
+            echo "build_type=both" >> $GITHUB_OUTPUT
+          else
+            echo "build_type=both" >> $GITHUB_OUTPUT
+          fi
+
+      # 8. 构建 Debug APK
+      - name: Build Debug APK
+        if: steps.resolve_build_type.outputs.build_type == 'debug' || steps.resolve_build_type.outputs.build_type == 'both'
+        run: ./gradlew assembleDebug --stacktrace
+
+      # 9. 构建 Release APK
+      #    项目默认使用 debug 签名配置构建 release, 因此无需额外配置即可生成可安装的 APK
+      - name: Build Release APK
+        if: steps.resolve_build_type.outputs.build_type == 'release' || steps.resolve_build_type.outputs.build_type == 'both'
+        run: ./gradlew assembleRelease --stacktrace
+
+      # 10. 收集构建产物到统一的目录
+      - name: Collect APK artifacts
+        if: always()
+        run: |
+          mkdir -p artifacts
+          # 复制 debug APK
+          find app/build/outputs/apk/debug -name "*.apk" -type f 2>/dev/null | while read -r apk; do
+            cp -v "$apk" "artifacts/$(basename "$apk" .apk)-debug.apk" 2>/dev/null || true
+          done || true
+          # 复制 release APK (保留原文件名 — 项目 build.gradle.kts 中已自定义命名)
+          find app/build/outputs/apk/release -name "*.apk" -type f 2>/dev/null | while read -r apk; do
+            cp -v "$apk" "artifacts/" 2>/dev/null || true
+          done || true
+          # 列出已收集的产物
+          echo "=== Collected artifacts ==="
+          ls -la artifacts/ || true
+
+      # 11. 上传 APK 作为 workflow 产物 (保留 30 天)
+      - name: Upload APK artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Re-WearBili-APK-${{ github.run_id }}
+          path: artifacts/*.apk
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0   # APK 已是压缩格式, 无需再次压缩
+
+      # 12. 上传构建报告 (用于排查构建失败)
+      - name: Upload build reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports-${{ github.run_id }}
+          path: |
+            **/build/reports/
+            **/build/outputs/logs/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # 13. (可选) 在推送 v* 标签时创建 GitHub Release 并附加 APK
+      - name: Create GitHub Release and Upload APK
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Re-WearBili ${{ github.ref_name }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: artifacts/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 在 PR 或主分支推送时执行快速编译检查 (lint 警告不阻止构建)
+  verify:
+    name: Lint & Compile Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/v'))
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            tools
+            platform-tools
+            build-tools;36.0.0
+            platforms;android-36
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run compile check
+        run: ./gradlew compileDebugKotlin --stacktrace
+
+      - name: Run lint (release)
+        run: ./gradlew lintRelease --stacktrace
+        continue-on-error: true   # lint 警告不应阻止构建
