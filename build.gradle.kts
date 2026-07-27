@@ -10,3 +10,13 @@ plugins {
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.baselineprofile) apply false
 }
+
+// 强制统一 kotlin-metadata-jvm 版本, 修复 Hilt/KSP 在 Kotlin 2.4 下的元数据兼容性问题
+// 参考: https://github.com/google/dagger/issues/5190
+subprojects {
+    configurations.configureEach {
+        resolutionStrategy {
+            force("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.9.0")
+        }
+    }
+}
