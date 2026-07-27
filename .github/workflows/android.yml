@@ -52,17 +52,17 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # 3. 配置 Android SDK (ubuntu-latest 已预装, 这里主要是接受许可 & 校验)
+      # 3. 配置 Android SDK (ubuntu-latest 已预装 SDK, 这里负责接受许可 & 校验)
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            tools
-            platform-tools
-            build-tools;36.0.0
-            platforms;android-36
 
-      # 4. 缓存 Gradle 用户目录 (与 setup-java 的 cache 互补)
+      # 4. 确保所需 SDK 组件就绪 (空格分隔, 避免 multiline 解析问题)
+      - name: Install required SDK components
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "build-tools;36.0.0" "platforms;android-36" || true
+
+      # 5. 缓存 Gradle 用户目录 (与 setup-java 的 cache 互补)
       - name: Cache Gradle Home
         uses: actions/cache@v4
         with:
@@ -74,11 +74,11 @@ jobs:
           restore-keys: |
             gradle-home-${{ runner.os }}-
 
-      # 5. 授予 gradlew 可执行权限
+      # 6. 授予 gradlew 可执行权限
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      # 6. (可选) 配置签名 keystore —— 仅在提供了对应 secrets 时生效
+      # 7. (可选) 配置签名 keystore —— 仅在提供了对应 secrets 时生效
       #    如果未配置 secrets, release 构建将使用项目默认的 debug 签名
       - name: Decode signing keystore (if provided)
         if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && env.SIGNING_KEYSTORE_BASE64 != '' }}
@@ -90,7 +90,7 @@ jobs:
           echo "Keystore decoded to $HOME/.android/release.keystore"
           ls -la $HOME/.android/release.keystore
 
-      # 7. 决定本次构建的类型 (debug / release / both)
+      # 8. 决定本次构建的类型 (debug / release / both)
       - name: Resolve build type
         id: resolve_build_type
         run: |
@@ -102,18 +102,18 @@ jobs:
             echo "build_type=both" >> $GITHUB_OUTPUT
           fi
 
-      # 8. 构建 Debug APK
+      # 9. 构建 Debug APK
       - name: Build Debug APK
         if: steps.resolve_build_type.outputs.build_type == 'debug' || steps.resolve_build_type.outputs.build_type == 'both'
         run: ./gradlew assembleDebug --stacktrace
 
-      # 9. 构建 Release APK
-      #    项目默认使用 debug 签名配置构建 release, 因此无需额外配置即可生成可安装的 APK
+      # 10. 构建 Release APK
+      #     项目默认使用 debug 签名配置构建 release, 因此无需额外配置即可生成可安装的 APK
       - name: Build Release APK
         if: steps.resolve_build_type.outputs.build_type == 'release' || steps.resolve_build_type.outputs.build_type == 'both'
         run: ./gradlew assembleRelease --stacktrace
 
-      # 10. 收集构建产物到统一的目录
+      # 11. 收集构建产物到统一的目录
       - name: Collect APK artifacts
         if: always()
         run: |
@@ -130,7 +130,7 @@ jobs:
           echo "=== Collected artifacts ==="
           ls -la artifacts/ || true
 
-      # 11. 上传 APK 作为 workflow 产物 (保留 30 天)
+      # 12. 上传 APK 作为 workflow 产物 (保留 30 天)
       - name: Upload APK artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -141,7 +141,7 @@ jobs:
           retention-days: 30
           compression-level: 0   # APK 已是压缩格式, 无需再次压缩
 
-      # 12. 上传构建报告 (用于排查构建失败)
+      # 13. 上传构建报告 (用于排查构建失败)
       - name: Upload build reports
         if: failure()
         uses: actions/upload-artifact@v4
@@ -153,7 +153,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      # 13. (可选) 在推送 v* 标签时创建 GitHub Release 并附加 APK
+      # 14. (可选) 在推送 v* 标签时创建 GitHub Release 并附加 APK
       - name: Create GitHub Release and Upload APK
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -187,12 +187,11 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            tools
-            platform-tools
-            build-tools;36.0.0
-            platforms;android-36
+
+      - name: Install required SDK components
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "build-tools;36.0.0" "platforms;android-36" || true
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
