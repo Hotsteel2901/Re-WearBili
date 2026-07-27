@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 34
+    compileSdkVersion 36
 
     namespace "tv.bilibili.ijkplayer.so"
 
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 36
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

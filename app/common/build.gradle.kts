@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         minSdk = 21
-        lint.targetSdk = 35
+        lint.targetSdk = 36
 
     }
 
