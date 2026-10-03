@@ -50,7 +50,11 @@ protobuf = "0.9.5"
 room = "2.6.1"
 buildTool = "36.0.0"
 
-agp = "8.7.3"
+# AGP 必须 >= 8.10.0: KSP 2.3.x 在 apply 时无条件调用
+# AndroidComponentsExtension.addKspConfigurations(boolean)（该 API 自 AGP 8.9.0 起存在，
+# KSP 2.3.10 声明的最低支持版本为 8.10.0），否则报 NoSuchMethodError。
+# 8.13.2 是 8.x 最后一个稳定版，其 R8 8.13.19 支持 Kotlin 2.3 元数据。
+agp = "8.13.2"
 
 kotlin = "2.3.10"
 workRuntime = "2.10.0"
