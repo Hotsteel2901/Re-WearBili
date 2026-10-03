@@ -8,8 +8,6 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import cn.spacexc.bilibilisdk.sdk.bangumi.info.BANGUMI_ID_TYPE_CID
-import cn.spacexc.bilibilisdk.sdk.bangumi.info.BangumiInfo
 import cn.spacexc.bilibilisdk.sdk.video.action.VideoAction
 import cn.spacexc.bilibilisdk.sdk.video.info.VideoInfo
 import cn.spacexc.bilibilisdk.sdk.video.info.remote.subtitle.Subtitle
@@ -21,6 +19,8 @@ import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheRepository
 import cn.spacexc.wearbili.remake.app.player.audio.AudioPlayerManager
 import cn.spacexc.wearbili.remake.app.settings.SettingsManager
 import cn.spacexc.wearbili.remake.common.HeartbeatListenable
+import cn.spacexc.wearbili.remake.common.networking.BilibiliApi
+import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import cn.spacexc.wearbili.remake.proto.settings.VideoDecoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -48,6 +48,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer
 class IjkPlayerAudioPlayerViewModel /*@Inject constructor*/(
     private val application: Application,
     private val repository: VideoCacheRepository,
+    private val networkUtils: KtorNetworkUtils,
     private val scope: CoroutineScope
 ): HeartbeatListenable<AudioPlayerManager.AudioPlayerHeartbeat> /*: ViewModel()*/ {
     // region view related
@@ -212,16 +213,17 @@ class IjkPlayerAudioPlayerViewModel /*@Inject constructor*/(
                 getVideoInfo(videoIdType, videoId)
                 onDataFetched(videoInfo?.data?.title ?: "未知视频")
                 appendLoadMessage("加载音频url...")
-                val urlResponse = BangumiInfo.getBangumiPlaybackUrl(BANGUMI_ID_TYPE_CID, videoCid)
-                val urlData = urlResponse.data?.result
-                if (urlData == null) {
+                val urlResponse = BilibiliApi.pgcVideoDurl(networkUtils, videoCid, bvid = videoId)
+                val videoUrl = urlResponse.data?.result?.videoInfo?.durl.orEmpty()
+                    .lastOrNull { !it.url.isNullOrBlank() }
+                    ?.url
+                if (videoUrl == null) {
                     appendLoadMessage(
-                        "出错！${urlResponse.code}: ${urlResponse.message}",
+                        "出错！${urlResponse.code}: ${urlResponse.message ?: "未获取到可播放的视频流"}",
                         needLineWrapping = false
                     )
                     return@launch
                 }
-                val videoUrl = urlData.durl.last { it.url.isNotEmpty() }.url
                 videoCastUrl = videoUrl
                 appendLoadMessage("成功!", needLineWrapping = false)
 
@@ -238,17 +240,21 @@ class IjkPlayerAudioPlayerViewModel /*@Inject constructor*/(
                 AudioPlayerManager.currentVideo = videoInfo?.data?.title ?: "未知视频"
                 loadSubtitle()
                 appendLoadMessage("加载音频url...")
-                val urlResponse =
-                    VideoInfo.getLowResolutionVideoPlaybackUrl(videoIdType, videoId, videoCid)
-                val urlData = urlResponse.data?.data
-                if (urlData == null) {
+                val urlResponse = BilibiliApi.videoDurl(
+                    networkUtils,
+                    videoIdType,
+                    videoId,
+                    videoCid,
+                )
+                val videoUrl = urlResponse.data?.data?.durl.orEmpty()
+                    .firstNotNullOfOrNull { part -> part.url?.takeIf(String::isNotBlank) }
+                if (videoUrl == null) {
                     appendLoadMessage(
-                        "出错！${urlResponse.code}: ${urlResponse.message}",
+                        "出错！${urlResponse.code}: ${urlResponse.message ?: "未获取到可播放的视频流"}",
                         needLineWrapping = false
                     )
                     return@launch
                 }
-                val videoUrl = urlData.durl.first { it.url.isNotEmpty() }.url
                 videoCastUrl = videoUrl
                 appendLoadMessage("成功!", needLineWrapping = false)
 
@@ -304,10 +310,11 @@ class IjkPlayerAudioPlayerViewModel /*@Inject constructor*/(
     }
 
     private suspend fun loadSubtitle() {
-        val urls = VideoInfo.getVideoPlayerInfo(
+        val urls = BilibiliApi.playerInfo(
+            networkUtils,
             cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_AID,
             videoInfo?.data?.aid?.toString() ?: "",
-            videoInfo?.data?.cid ?: 0
+            videoInfo?.data?.cid ?: 0,
         ).data?.data?.subtitle?.subtitles
         urls.logd("subtitles0")
         urls?.let {
@@ -377,7 +384,7 @@ class IjkPlayerAudioPlayerViewModel /*@Inject constructor*/(
     ) {
         appendLoadMessage("获取音频信息...")
         val response =
-            VideoInfo.getVideoInfoByIdWeb(videoIdType, videoId)
+            BilibiliApi.videoInfo(networkUtils, videoIdType, videoId)
         print("Obtained Video Info")
         if (response.code != 0 || response.data == null || response.data?.data == null) return
         videoInfo = response.data

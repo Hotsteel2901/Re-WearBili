@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import cn.spacexc.bilibilisdk.sdk.video.info.VideoInfo
 import cn.spacexc.bilibilisdk.sdk.video.info.remote.info.web.Page
 import cn.spacexc.bilibilisdk.sdk.video.info.remote.info.web.WebVideoInfo
 import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheFileInfo
@@ -18,6 +17,8 @@ import cn.spacexc.wearbili.remake.app.cache.domain.worker.VideoDownloadWorker
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
 import cn.spacexc.wearbili.remake.common.ToastUtils
 import cn.spacexc.wearbili.remake.common.UIState
+import cn.spacexc.wearbili.remake.common.networking.BilibiliApi
+import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,7 +34,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateNewCacheViewModel @Inject constructor(
     val application: Application,
-    private val repository: VideoCacheRepository
+    private val repository: VideoCacheRepository,
+    private val networkUtils: KtorNetworkUtils,
 ) : ViewModel() {
 
     var uiState: UIState by mutableStateOf(UIState.Loading)
@@ -45,7 +47,7 @@ class CreateNewCacheViewModel @Inject constructor(
         videoBvid: String
     ) {
         viewModelScope.launch {
-            val response = VideoInfo.getVideoInfoByIdWeb(VIDEO_TYPE_BVID, videoBvid)
+            val response = BilibiliApi.videoInfo(networkUtils, VIDEO_TYPE_BVID, videoBvid)
             if (response.code != 0) {
                 uiState = UIState.Failed(response.code)
                 return@launch

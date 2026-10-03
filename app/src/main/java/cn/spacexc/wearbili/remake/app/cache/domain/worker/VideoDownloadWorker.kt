@@ -4,9 +4,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import cn.spacexc.bilibilisdk.sdk.bangumi.info.BANGUMI_ID_TYPE_CID
-import cn.spacexc.bilibilisdk.sdk.bangumi.info.BangumiInfo
-import cn.spacexc.bilibilisdk.sdk.video.info.VideoInfo
 import cn.spacexc.wearbili.common.formatBytes
 import cn.spacexc.wearbili.remake.app.cache.domain.database.STATE_COMPLETED
 import cn.spacexc.wearbili.remake.app.cache.domain.database.STATE_DOWNLOADING
@@ -15,6 +12,7 @@ import cn.spacexc.wearbili.remake.app.cache.domain.database.STATE_FETCHING
 import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheRepository
 import cn.spacexc.wearbili.remake.app.player.videoplayer.danmaku.DanmakuGetter
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
+import cn.spacexc.wearbili.remake.common.networking.BilibiliApi
 import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -57,27 +55,31 @@ class VideoDownloadWorker @AssistedInject constructor(
 
             val duration: Long
             val videoUrl = if (!isBangumi) {
-                val videoUrlResponse = VideoInfo.getLowResolutionVideoPlaybackUrl(
+                val videoUrlResponse = BilibiliApi.videoDurl(
+                    ktorNetworkUtils,
                     VIDEO_TYPE_BVID,
                     videoId = bvid,
-                    videoCid = cid
+                    videoCid = cid,
                 )
-                duration =
-                    videoUrlResponse.data?.data?.timelength ?: 0 //哇！kotlin竟然还能这么玩！变量只要只改变一次就可以是val！
-                videoUrlResponse.data?.data?.durl?.firstOrNull()?.url
+                val playbackData = videoUrlResponse.data?.data
+                duration = playbackData?.timelength ?: 0L
+                playbackData?.durl?.firstNotNullOfOrNull { part ->
+                    part.url?.takeIf(String::isNotBlank)
+                }
             } else {
-                val bangumiUrlResponse = BangumiInfo.getBangumiPlaybackUrl(
-                    BANGUMI_ID_TYPE_CID,
-                    cid
-                )
-                duration = bangumiUrlResponse.data?.result?.timelength ?: 0
-                bangumiUrlResponse.data?.result?.durl?.firstOrNull()?.url
+                val bangumiUrlResponse = BilibiliApi.pgcVideoDurl(ktorNetworkUtils, cid, bvid = bvid)
+                val playbackData = bangumiUrlResponse.data?.result?.videoInfo
+                duration = playbackData?.timelength ?: 0L
+                playbackData?.durl?.firstNotNullOfOrNull { part ->
+                    part.url?.takeIf(String::isNotBlank)
+                }
             } ?: ""/*return Result.failure()*/
 
-            val subtitleResponse = VideoInfo.getVideoPlayerInfo(
+            val subtitleResponse = BilibiliApi.playerInfo(
+                ktorNetworkUtils,
                 VIDEO_TYPE_BVID,
                 bvid,
-                cid
+                cid,
             ).data?.data
             val subtitleUrls = subtitleResponse?.subtitle?.subtitles ?: emptyList()
             //if (subtitleUrls.isNullOrEmpty()) return Result.failure()

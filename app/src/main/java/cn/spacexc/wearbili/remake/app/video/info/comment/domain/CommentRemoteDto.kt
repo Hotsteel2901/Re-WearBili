@@ -34,7 +34,14 @@ data class CommentCursor(
     val all_count: Int,
     val is_begin: Boolean,
     val is_end: Boolean,
-    val name: String
+    val name: String,
+    @SerializedName("pagination_reply")
+    val pagination_reply: PaginationReply? = null,
+)
+
+data class PaginationReply(
+    @SerializedName("next_offset")
+    val next_offset: String?,
 )
 
 data class CommentNotice(

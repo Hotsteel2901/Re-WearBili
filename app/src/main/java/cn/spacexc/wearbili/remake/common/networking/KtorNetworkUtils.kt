@@ -3,10 +3,12 @@ package cn.spacexc.wearbili.remake.common.networking
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import cn.spacexc.bilibilisdk.BilibiliSdkManager
 import cn.spacexc.bilibilisdk.data.CookiesManager
 import cn.spacexc.bilibilisdk.network.APP_KEY
 import cn.spacexc.bilibilisdk.network.APP_SEC
 import cn.spacexc.bilibilisdk.network.BasicResponseDto
+import cn.spacexc.bilibilisdk.sdk.user.webi.WebiSignature
 import cn.spacexc.wearbili.common.EncryptUtils
 import cn.spacexc.wearbili.common.domain.log.logd
 import io.ktor.client.HttpClient
@@ -163,6 +165,47 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
         return get(url = "$host?$param", builder = builder)
     }
 
+    suspend inline fun <reified T> getWithWbiSignature(
+        endpoint: String,
+        parameters: Map<String, String>,
+        builder: HttpRequestBuilder.() -> Unit = {}
+    ): NetworkResponse<T> {
+        return try {
+            val storedKey = BilibiliSdkManager.dataManager
+                .getString("webi_signature_key", null)
+                ?.takeIf { it.length >= 32 }
+            val mixinKey = storedKey
+                ?: WebiSignature.getWebiSignature().data?.take(32)
+                ?: return NetworkResponse.Failed(
+                    code = -1,
+                    message = "Unable to load the Bilibili WBI signing key",
+                    apiUrl = endpoint
+                )
+
+            var response = get<T>(
+                BiliWbiSigner.buildSignedUrl(endpoint, parameters, mixinKey),
+                builder
+            )
+            // The key can rotate while the app is open. Refresh it once on signature errors.
+            if (response.code == -352) {
+                val refreshedKey = WebiSignature.getWebiSignature().data?.take(32)
+                if (!refreshedKey.isNullOrBlank() && refreshedKey != mixinKey) {
+                    response = get(
+                        BiliWbiSigner.buildSignedUrl(endpoint, parameters, refreshedKey),
+                        builder
+                    )
+                }
+            }
+            response
+        } catch (exception: Exception) {
+            NetworkResponse.Failed(
+                code = -1,
+                message = exception.message ?: "Unable to sign the Bilibili request",
+                apiUrl = endpoint
+            )
+        }
+    }
+
     suspend fun getRedirectUrl(url: String): String? {
         //if(response.status != HttpStatusCode.Found) return null
         return noRedirectClient.get(url).headers["location"]
@@ -184,11 +227,22 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
 
             response.request.headers.logd("request headers for $url")
             return if (response.status == HttpStatusCode.OK) {
-                NetworkResponse.Success(data = response.body(), apiUrl = url)
+                val responseInfo = response.body<BasicResponseDto>()
+                if (responseInfo.code == 0) {
+                    NetworkResponse.Success(data = response.body(), apiUrl = url)
+                } else {
+                    NetworkResponse.Failed(
+                        code = responseInfo.code,
+                        message = responseInfo.message,
+                        data = null,
+                        apiUrl = url
+                    )
+                }
             } else {
-                val body = response.body<BasicResponseDto>()
+                val responseInfo = response.body<BasicResponseDto>()
                 NetworkResponse.Failed(
-                    code = body.code, message = body.message,
+                    code = responseInfo.code,
+                    message = responseInfo.message,
                     data = null,
                     apiUrl = url
                 )

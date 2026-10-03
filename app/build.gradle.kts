@@ -111,6 +111,8 @@ kapt {
 }
 
 dependencies {
+    testImplementation(libs.junit)
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)

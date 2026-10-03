@@ -19,6 +19,7 @@ import cn.spacexc.wearbili.remake.app.bangumi.info.ui.BANGUMI_ID_TYPE_EPID
 import cn.spacexc.wearbili.remake.app.bangumi.info.ui.BangumiScreen
 import cn.spacexc.wearbili.remake.common.ToastUtils
 import cn.spacexc.wearbili.remake.common.UIState
+import cn.spacexc.wearbili.remake.common.networking.BilibiliApi
 import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -218,7 +219,7 @@ class VideoInformationViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val videoPlayerInformation =
-                VideoInfo.getVideoPlayerInfo(videoIdType, videoId, videoCid)
+                BilibiliApi.playerInfo(ktorNetworkUtils, videoIdType, videoId, videoCid)
             videoPlayerInformation.data?.data?.dm_mask?.let { maskInfo ->
                 val directory = File(application.cacheDir, "/danmakuMask")
                 if (!directory.exists()) directory.mkdir()

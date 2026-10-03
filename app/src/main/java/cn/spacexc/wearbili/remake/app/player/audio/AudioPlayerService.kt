@@ -14,6 +14,7 @@ import cn.spacexc.wearbili.remake.R
 import cn.spacexc.wearbili.remake.app.MainActivity
 import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheRepository
 import cn.spacexc.wearbili.remake.app.player.audio.ui.IjkPlayerAudioPlayerViewModel
+import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +37,9 @@ class AudioPlayerService : LifecycleService() {
 
     @Inject
     lateinit var repository: VideoCacheRepository
+
+    @Inject
+    lateinit var networkUtils: KtorNetworkUtils
 
     lateinit var viewModel: IjkPlayerAudioPlayerViewModel
 
@@ -63,7 +67,7 @@ class AudioPlayerService : LifecycleService() {
         startForeground(NOTIFICATION_ID, notification)
 
         println("Service started!")
-        viewModel = IjkPlayerAudioPlayerViewModel(application, repository, lifecycleScope)
+        viewModel = IjkPlayerAudioPlayerViewModel(application, repository, networkUtils, lifecycleScope)
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -82,7 +86,7 @@ class AudioPlayerService : LifecycleService() {
             viewModel.player.release()
             subtitleUpdateJob?.cancel()
             subtitleUpdateJob?.cancel()
-            viewModel = IjkPlayerAudioPlayerViewModel(application, repository, lifecycleScope)
+            viewModel = IjkPlayerAudioPlayerViewModel(application, repository, networkUtils, lifecycleScope)
             viewModel.playVideoFromId(videoIdType, videoId, videoCid, false) {
                 updateSubtitle()
             }

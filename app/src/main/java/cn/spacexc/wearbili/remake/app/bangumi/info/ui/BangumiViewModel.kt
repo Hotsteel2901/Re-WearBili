@@ -19,7 +19,6 @@ import androidx.work.workDataOf
 import cn.spacexc.bilibilisdk.sdk.bangumi.info.BangumiInfo
 import cn.spacexc.bilibilisdk.sdk.bangumi.info.remote.Episode
 import cn.spacexc.bilibilisdk.sdk.bangumi.info.remote.Result
-import cn.spacexc.bilibilisdk.sdk.video.info.VideoInfo
 import cn.spacexc.wearbili.remake.app.Application
 import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheFileInfo
 import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheRepository
@@ -27,6 +26,7 @@ import cn.spacexc.wearbili.remake.app.cache.domain.worker.VideoDownloadWorker
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
 import cn.spacexc.wearbili.remake.common.ToastUtils
 import cn.spacexc.wearbili.remake.common.UIState
+import cn.spacexc.wearbili.remake.common.networking.BilibiliApi
 import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.request.get
@@ -124,7 +124,8 @@ class BangumiViewModel @Inject constructor(
         return sectionsScrollState[id]!!
     }
 
-    private suspend fun getSubtitles() = VideoInfo.getVideoPlayerInfo(
+    private suspend fun getSubtitles() = BilibiliApi.playerInfo(
+        ktorNetworkUtils,
         VIDEO_TYPE_BVID,
         getCurrentSelectedEpisode()?.bvid ?: "",
         getCurrentSelectedEpisode()?.cid ?: 0,

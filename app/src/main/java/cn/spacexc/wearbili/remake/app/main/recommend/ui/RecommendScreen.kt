@@ -158,18 +158,20 @@ fun RecommendScreen(
             when (configuration.recommendSource) {
                 null -> {}
                 RecommendSource.App -> {
-                    (state.videoList as List<Item>/* 这里真的没事的（确信 */).forEach {
-                        if (it.goto == "av") {
+                    (state.videoList as List<Item>).forEach { video ->
+                        val videoId = video.bvid?.takeIf(String::isNotBlank)
+                            ?: video.param?.takeIf(String::isNotBlank)
+                        if (video.goto == "av" && !videoId.isNullOrBlank()) {
                             try {
-                                item(key = it.uri) {
+                                item(key = video.uri ?: videoId) {
                                     VideoCard(
-                                        videoName = it.title,
-                                        uploader = it.args.up_name ?: "",
-                                        views = it.cover_left_text_2,
-                                        coverUrl = it.cover ?: "",
+                                        videoName = video.title.orEmpty(),
+                                        uploader = video.args?.up_name.orEmpty(),
+                                        views = video.cover_left_text_2.orEmpty(),
+                                        coverUrl = video.cover.orEmpty(),
                                         navController = navController,
-                                        videoIdType = if (it.bvid.isNullOrEmpty()) VIDEO_TYPE_AID else VIDEO_TYPE_BVID,
-                                        videoId = it.bvid ?: it.param,
+                                        videoIdType = if (video.bvid.isNullOrBlank()) VIDEO_TYPE_AID else VIDEO_TYPE_BVID,
+                                        videoId = videoId,
                                         modifier = Modifier.wearBiliAnimateContentPlacement(this),
                                         isLarge = isLargeCard
                                     )
