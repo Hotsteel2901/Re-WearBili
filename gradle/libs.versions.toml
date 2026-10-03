@@ -47,7 +47,11 @@ jvm-target = "17"
 photoview = "2.3.0"
 protobuflite = "3.25.5"
 protobuf = "0.9.5"
-room = "2.6.1"
+# Room 2.6.1 的 KSP 后端不兼容 KSP2（KSP >= 2.3），处理返回 Unit 的 @Query 时会抛
+# java.lang.IllegalStateException: unexpected jvm signature V
+# (androidx.room.compiler.processing.javac.kotlin.JvmDescriptorUtils.typeNameFromJvmSignature)，
+# 2.7.0 起修复。
+room = "2.8.5"
 buildTool = "36.0.0"
 
 # AGP 必须 >= 8.10.0: KSP 2.3.x 在 apply 时无条件调用
