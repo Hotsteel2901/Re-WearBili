@@ -51,9 +51,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.get()
-    }
+    // kotlinOptions { jvmTarget = ... } 在 KGP 2.2+ 已是 error 级别弃用（AGP 8.13 会直接
+    // 编译失败: "Using 'jvmTarget: String' is an error"），改用下方 kotlin { compilerOptions } DSL。
 
     buildFeatures {
         compose = true
@@ -102,7 +101,7 @@ protobuf {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(libs.versions.jvm.target.get()))
     }
 }
 

@@ -13,10 +13,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     defaultConfig {
         minSdk = 28
         targetSdk = 36
@@ -26,6 +22,13 @@ android {
 
     targetProjectPath = ":app"
 
+}
+
+// kotlinOptions { jvmTarget = ... } 在 KGP 2.2+ 是 error 级别弃用，改用 compilerOptions DSL
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(libs.versions.jvm.target.get()))
+    }
 }
 
 // This is the configuration block for the Baseline Profile plugin.

@@ -30,10 +30,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.get()
-    }
+}
 
+// kotlinOptions { jvmTarget = ... } 在 KGP 2.2+ 是 error 级别弃用，改用 compilerOptions DSL
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(libs.versions.jvm.target.get()))
+    }
 }
 
 dependencies {
