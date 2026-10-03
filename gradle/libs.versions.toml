@@ -50,8 +50,9 @@ protobuf = "0.9.5"
 # Room 2.6.1 的 KSP 后端不兼容 KSP2（KSP >= 2.3），处理返回 Unit 的 @Query 时会抛
 # java.lang.IllegalStateException: unexpected jvm signature V
 # (androidx.room.compiler.processing.javac.kotlin.JvmDescriptorUtils.typeNameFromJvmSignature)，
-# 2.7.0 起修复。
-room = "2.8.5"
+# 2.7.0 起修复。这里停在 2.7.x：Room 2.8.0 把 minSdk 从 21 提到了 23，
+# 而本项目（手表端）仍要兼容 API 21。
+room = "2.7.2"
 buildTool = "36.0.0"
 
 # AGP 必须 >= 8.10.0: KSP 2.3.x 在 apply 时无条件调用
