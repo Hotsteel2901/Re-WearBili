@@ -57,10 +57,11 @@ class SearchViewModel @Inject constructor(
 
     fun getHotSearch() {
         viewModelScope.launch {
-            val response =
-                networkUtils.get<TrendingWordList>("https://api.bilibili.com/x/web-interface/wbi/search/square?limit=10&platform=web")
-            if (response.code != 0) return@launch
-            _hotSearchedWords.value = response.data?.data?.trending?.list ?: emptyList()
+            val response = networkUtils.get<TrendingWordList>(
+                "https://api.bilibili.com/x/v2/search/trending/ranking?limit=10"
+            )
+            if (response.code != 0 || response.data?.code != 0) return@launch
+            _hotSearchedWords.value = response.data?.data?.list.orEmpty()
         }
     }
 

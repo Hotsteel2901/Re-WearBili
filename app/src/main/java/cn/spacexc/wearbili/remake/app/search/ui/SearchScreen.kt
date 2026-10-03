@@ -381,10 +381,10 @@ fun SearchScreen(
                         }
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (item.icon.isNotEmpty()) {
+                            item.icon?.takeIf(String::isNotBlank)?.let { icon ->
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
-                                        .data(item.icon.replace("http://", "https://"))
+                                        .data(icon.replace("http://", "https://"))
                                         .crossfade(true).build(),
                                     contentDescription = null,
                                     modifier = Modifier.height(hotWordItemHeight),
@@ -400,7 +400,7 @@ fun SearchScreen(
                                 Spacer(modifier = Modifier.width(2.dp))
                             }
                             Text(
-                                text = item.showName,
+                                text = item.showName?.takeIf(String::isNotBlank) ?: item.keyword,
                                 style = AppTheme.typography.body1
                             )
                         }

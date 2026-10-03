@@ -15,8 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bilibili.community.service.dm.v1.CommandDm
 import bilibili.community.service.dm.v1.DmSegMobileReply
-import cn.spacexc.bilibilisdk.sdk.bangumi.info.BANGUMI_ID_TYPE_CID
-import cn.spacexc.bilibilisdk.sdk.bangumi.info.BangumiInfo
 import cn.spacexc.bilibilisdk.sdk.video.action.VideoAction
 import cn.spacexc.bilibilisdk.sdk.video.info.VideoInfo
 import cn.spacexc.bilibilisdk.sdk.video.info.remote.subtitle.Subtitle
@@ -31,6 +29,7 @@ import cn.spacexc.wearbili.remake.app.player.videoplayer.danmaku.compose.data.Da
 import cn.spacexc.wearbili.remake.app.settings.SettingsManager
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
 import cn.spacexc.wearbili.remake.common.ToastUtils
+import cn.spacexc.wearbili.remake.common.networking.BilibiliApi
 import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import cn.spacexc.wearbili.remake.proto.settings.VideoDecoder
 import com.google.gson.Gson
@@ -277,17 +276,17 @@ class IjkVideoPlayerViewModel @Inject constructor(
                 appendLoadMessage("加载视频url...")
             }
             viewModelScope.launch {
-                val urlResponse =
-                    BangumiInfo.getBangumiPlaybackUrl(BANGUMI_ID_TYPE_CID, videoCid)
-                val urlData = urlResponse.data?.result
-                if (urlData == null) {
+                val urlResponse = BilibiliApi.pgcVideoDurl(networkUtils, videoCid, bvid = videoId)
+                val videoUrl = urlResponse.data?.result?.videoInfo?.durl.orEmpty()
+                    .lastOrNull { !it.url.isNullOrBlank() }
+                    ?.url
+                if (videoUrl == null) {
                     appendLoadMessage(
-                        "出错！${urlResponse.code}: ${urlResponse.message}",
+                        "出错！${urlResponse.code}: ${urlResponse.message ?: "未获取到可播放的视频流"}",
                         needLineWrapping = false
                     )
                     return@launch
                 }
-                val videoUrl = urlData.durl.last { it.url.isNotEmpty() }.url
                 videoCastUrl = videoUrl
                 appendLoadMessage("成功!", needLineWrapping = false)
 
@@ -302,18 +301,23 @@ class IjkVideoPlayerViewModel @Inject constructor(
         } else {
             appendLoadMessage("加载视频url...")
             viewModelScope.launch {
-                val urlResponse =
-                    VideoInfo.getLowResolutionVideoPlaybackUrl(videoIdType, videoId, videoCid)
+                val urlResponse = BilibiliApi.videoDurl(
+                    networkUtils,
+                    videoIdType,
+                    videoId,
+                    videoCid,
+                )
                 val urlData = urlResponse.data?.data
-                videoHistoryPlayProgress = urlData?.last_play_time ?: 0L
-                if (urlData == null) {
+                videoHistoryPlayProgress = urlData?.lastPlayTime ?: 0L
+                val videoUrl = urlData?.durl.orEmpty()
+                    .firstNotNullOfOrNull { part -> part.url?.takeIf(String::isNotBlank) }
+                if (videoUrl == null) {
                     appendLoadMessage(
-                        "出错！${urlResponse.code}: ${urlResponse.message}",
+                        "出错！${urlResponse.code}: ${urlResponse.message ?: "未获取到可播放的视频流"}",
                         needLineWrapping = false
                     )
                     return@launch
                 }
-                val videoUrl = urlData.durl.first { it.url.isNotEmpty() }.url
                 videoCastUrl = videoUrl
                 appendLoadMessage("成功!", needLineWrapping = false)
 
@@ -404,10 +408,11 @@ class IjkVideoPlayerViewModel @Inject constructor(
     }
 
     private suspend fun loadSubtitleAndVideoChapters() {
-        val response = VideoInfo.getVideoPlayerInfo(
+        val response = BilibiliApi.playerInfo(
+            networkUtils,
             cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_AID,
             videoInfo?.data?.aid?.toString() ?: "",
-            videoInfo?.data?.cid ?: 0
+            videoInfo?.data?.cid ?: 0,
         ).data?.data
         val urls = response?.subtitle?.subtitles
         urls.logd("subtitles0")
@@ -450,7 +455,7 @@ class IjkVideoPlayerViewModel @Inject constructor(
     ) {
         appendLoadMessage("获取视频信息...")
         val response =
-            VideoInfo.getVideoInfoByIdWeb(videoIdType, videoId)//.logd("subtitleResponse")!!
+            BilibiliApi.videoInfo(networkUtils, videoIdType, videoId)//.logd("subtitleResponse")!!
         print("Obtained Video Info")
         if (response.code != 0 || response.data == null || response.data?.data == null) return
         videoInfo = response.data

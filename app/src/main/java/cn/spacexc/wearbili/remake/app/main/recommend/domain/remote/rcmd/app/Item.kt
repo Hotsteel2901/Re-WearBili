@@ -2,7 +2,7 @@ package cn.spacexc.wearbili.remake.app.main.recommend.domain.remote.rcmd.app
 
 data class Item(
     val ad_info: AdInfo?,
-    val args: Args,
+    val args: Args?,
     val can_play: Int,
     val card_goto: String,
     val bvid: String?,
@@ -13,12 +13,12 @@ data class Item(
     val cover_left_icon_1: Int,
     val cover_left_icon_2: Int,
     val cover_left_text_1: String?,
-    val cover_left_text_2: String,
+    val cover_left_text_2: String?,
     val cover_right_content_description: String,
     val cover_right_text: String,
     val desc: String?,
     val desc_button: DescButton?,
-    val goto: String,
+    val goto: String?,
     val cover_badge: String?,
     val goto_icon: GotoIcon?,
     val idx: Int,
@@ -30,8 +30,8 @@ data class Item(
     val talk_back: String?,
     val three_point: ThreePoint,
     val three_point_v2: List<ThreePointV2>,
-    val title: String,
+    val title: String?,
     val track_id: String,
-    val uri: String,
+    val uri: String?,
     val badge: String?
 )
