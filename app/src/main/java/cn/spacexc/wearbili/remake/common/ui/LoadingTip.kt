@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -51,7 +52,7 @@ fun LoadingTip(
         )
     },
     fontSize = 9.5.sp,
-    color = Color.White,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
     modifier = Modifier
         .alpha(0.6f)
         .fillMaxWidth()
@@ -71,7 +72,7 @@ fun LoadingTip(
             )
         ) {
             CircularProgressIndicator(
-                color = BilibiliPink,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxSize(),
                 strokeWidth = 2.dp
             )

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -246,8 +247,9 @@ fun LargeUserCard(
                 AutoResizedText(
                     text = username,
                     fontWeight = Bold,
-                    color = cn.spacexc.wearbili.common.domain.color.parseColor(
-                        (usernameColor ?: "#FFFFFF").ifEmpty { "#FFFFFF" }),
+                    color = usernameColor?.takeIf { it.isNotEmpty() }
+                        ?.let { cn.spacexc.wearbili.common.domain.color.parseColor(it) }
+                        ?: MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .onSizeChanged {
                             avatarHeight = with(localDensity) { it.height.toDp() }
@@ -263,7 +265,7 @@ fun LargeUserCard(
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = wearbiliFontFamily
                             ),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.alpha(0.7f),
                             maxLines = 1,
                             //overflow = TextOverflow.Ellipsis
@@ -276,7 +278,7 @@ fun LargeUserCard(
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = wearbiliFontFamily
                             ),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.alpha(0.7f),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -343,9 +345,9 @@ fun SmallUserCard(
                     append(userLabel)
                     withStyle(
                         style = SpanStyle(
-                            color = cn.spacexc.wearbili.common.domain.color.parseColor(
-                                usernameColor.ifNullOrEmpty { "#FFFFFF" }
-                            ),
+                            color = usernameColor?.takeIf { it.isNotEmpty() }
+                                ?.let { cn.spacexc.wearbili.common.domain.color.parseColor(it) }
+                                ?: MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Medium
                         )
                     ) {
@@ -370,7 +372,7 @@ fun SmallUserCard(
                         fontWeight = FontWeight.Medium,
                         fontFamily = wearbiliFontFamily
                     ),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.alpha(0.7f)
                 )
             }

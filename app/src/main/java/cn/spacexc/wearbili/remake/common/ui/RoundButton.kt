@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,9 +53,9 @@ import cn.spacexc.wearbili.remake.common.ui.theme.body2
 fun LargeRoundButton(
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    background: Color = Color(41, 41, 41),
+    background: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     text: String,
-    iconColor: Color = Color.White,
+    iconColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit
 ) {
     Column(
@@ -119,7 +120,7 @@ fun OutlinedRoundButton(
                 text = text,
                 fontFamily = wearbiliFontFamily,
                 fontWeight = FontWeight.Medium,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -209,7 +210,7 @@ fun VfxOutlinedRoundButton(
             count = count, style = TextStyle(
                 fontFamily = wearbiliFontFamily,
                 fontWeight = FontWeight.Medium,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 12.sp
             )
         )

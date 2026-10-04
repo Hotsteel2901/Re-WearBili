@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +53,7 @@ fun BorderTextField(
         ) {
             Icon(
                 imageVector = leadingIcon,
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 contentDescription = null
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -63,7 +64,7 @@ fun BorderTextField(
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontFamily = wearbiliFontFamily,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         modifier = Modifier
                             .alpha(0.6f)
@@ -77,14 +78,14 @@ fun BorderTextField(
                     textStyle = TextStyle(
                         fontSize = 14.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(
                             Alignment.CenterStart
                         ),
-                    cursorBrush = SolidColor(value = BilibiliPink),
+                    cursorBrush = SolidColor(value = MaterialTheme.colorScheme.primary),
                     keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
                 )
             }

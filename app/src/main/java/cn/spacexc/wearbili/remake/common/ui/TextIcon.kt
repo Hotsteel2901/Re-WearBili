@@ -1,4 +1,5 @@
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +41,7 @@ fun SegoeTextIcon(
     icon: String,
     modifier: Modifier = Modifier,
     size: TextUnit = 24.sp,
-    color: Color = Color.White
+    color: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Text(
         text = unicodeToString("\\u$icon"),
@@ -58,7 +59,7 @@ fun BiliTextIcon(
     modifier: Modifier = Modifier,
     isUnicode: Boolean = true,
     size: TextUnit = 24.sp,
-    color: Color = Color.White
+    color: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Text(
         text = if (isUnicode) unicodeToString("\\u$icon") else icon,
@@ -76,7 +77,7 @@ fun AutoSizedBiliTextIcon(
     modifier: Modifier = Modifier,
     isUnicode: Boolean = true,
     defaultSize: TextUnit = 24.sp,
-    color: Color = Color.White
+    color: Color = MaterialTheme.colorScheme.onSurface
 ) {
     AutoResizedText(
         text = if (isUnicode) unicodeToString("\\u$icon") else icon,

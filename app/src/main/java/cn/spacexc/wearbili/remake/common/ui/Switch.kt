@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,12 +29,14 @@ fun Switch(
     onValueChanged: (Boolean) -> Unit
 ) {
     val color by animateColorAsState(
-        targetValue = if (isOn) BilibiliPink else Color(
-            23,
-            23,
-            23,
-            255
-        ), label = ""
+        targetValue = if (isOn) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.surfaceContainerHighest,
+        label = ""
+    )
+    val thumbColor by animateColorAsState(
+        targetValue = if (isOn) MaterialTheme.colorScheme.onPrimary
+        else MaterialTheme.colorScheme.outline,
+        label = ""
     )
     val spacerWidth by animateDpAsState(targetValue = if (isOn) size else 0.dp, label = "")
     Row(
@@ -48,7 +51,7 @@ fun Switch(
         Spacer(modifier = Modifier.width(spacerWidth))
         Box(
             modifier = Modifier
-                .background(Color.White, CircleShape)
+                .background(thumbColor, CircleShape)
                 .size(size - 8.dp)
                 .aspectRatio(1f)
                 .fillMaxHeight()

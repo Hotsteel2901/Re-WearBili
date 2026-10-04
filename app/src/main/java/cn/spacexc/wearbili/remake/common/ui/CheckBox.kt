@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -94,7 +95,7 @@ fun Checkbox(
     indication: Boolean = false,
     size: Dp = 16.dp,
     radiusPercentage: Int = 30,
-    checkmarkColor: Color = Color.White,
+    checkmarkColor: Color = MaterialTheme.colorScheme.onPrimary,
     onCheckedChanged: (Boolean) -> Unit
 ) {
     val density = LocalDensity.current
@@ -102,17 +103,15 @@ fun Checkbox(
     // ---- Parameters
 
     val shape = remember { RoundedCornerShape(radiusPercentage) }
-    val borderStroke = remember {
-        BorderStroke(
-            width = 0.75.dp,
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    Color(121, 121, 121, 255),
-                    Color.Transparent
-                )
+    val borderStroke = BorderStroke(
+        width = 0.75.dp,
+        brush = Brush.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.outline,
+                Color.Transparent
             )
         )
-    }
+    )
     val checkmarkStroke = remember {
         with(density) {
             Stroke(
@@ -124,12 +123,8 @@ fun Checkbox(
     }
 
     val color by wearBiliAnimateColorAsState(
-        targetValue = if (isChecked) BilibiliPink else Color(
-            87,
-            87,
-            87,
-            77
-        ),
+        targetValue = if (isChecked) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.3f),
         animationSpec = tween()
     )
     val checkmarkStrokeProgressAnimationSpec = remember {
