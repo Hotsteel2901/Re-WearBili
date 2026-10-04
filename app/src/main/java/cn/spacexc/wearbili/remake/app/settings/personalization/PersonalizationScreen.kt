@@ -54,6 +54,7 @@ import cn.spacexc.wearbili.remake.proto.settings.AnimationLevel
 import cn.spacexc.wearbili.remake.proto.settings.Appearance
 import cn.spacexc.wearbili.remake.proto.settings.Customization
 import cn.spacexc.wearbili.remake.proto.settings.CustomizationKt
+import cn.spacexc.wearbili.remake.proto.settings.DeviceLayout
 import cn.spacexc.wearbili.remake.proto.settings.copy
 import kotlinx.coroutines.launch
 
@@ -100,6 +101,7 @@ fun PersonalizationScreen(
     var glassEnabled by remember(customization.glassEnabled) { mutableStateOf(customization.glassEnabled) }
     var animationLevel by remember(customization.animationLevel) { mutableStateOf(customization.animationLevel) }
     var themeColorHex by remember(customization.themeColorHex) { mutableStateOf(customization.themeColorHex) }
+    var deviceLayout by remember(customization.deviceLayout) { mutableStateOf(customization.deviceLayout) }
 
     /**
      * 写入单条个性化配置。
@@ -231,6 +233,30 @@ fun PersonalizationScreen(
                         AnimationLevel.Standard -> "标准动效（推荐）"
                         AnimationLevel.Full -> "Expressive 弹簧动效全开，最流畅"
                         else -> ""
+                    }
+                )
+            }
+            // ---------- 设备布局 ----------
+            item {
+                SectionTitle("设备布局")
+                SegmentSelector(
+                    options = listOf(
+                        DeviceLayout.DeviceWatch to "手表",
+                        DeviceLayout.DevicePhone to "手机"
+                    ),
+                    selected = deviceLayout,
+                    onSelect = {
+                        deviceLayout = it
+                        save {
+                            this.deviceLayout = it
+                            this.hasChosenDeviceLayout = true
+                        }
+                    }
+                )
+                HintText(
+                    when (deviceLayout) {
+                        DeviceLayout.DevicePhone -> "手机布局：信息密度更高，双列内容，密度用设备原生值"
+                        else -> "手表布局：大触控目标，单列内容，密度按手表屏放大"
                     }
                 )
             }

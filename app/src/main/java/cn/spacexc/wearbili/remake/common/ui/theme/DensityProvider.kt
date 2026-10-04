@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import cn.spacexc.wearbili.common.ifNullOrZero
 import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
+import cn.spacexc.wearbili.remake.proto.settings.DeviceLayout
 
 @Composable
 fun ProvideLocalDensity(
@@ -18,9 +19,19 @@ fun ProvideLocalDensity(
     val fontScale = LocalDensity.current.fontScale
     val displayMetrics = LocalContext.current.resources.displayMetrics
     val widthPixels = displayMetrics.widthPixels.toFloat()
-    //算出来的，可在其基础上微调
-    val scaleFactor = widthPixels / 372.0f  //Oppo Watch基准数据
-    val density = 2f * scaleFactor * scale
+    val density: Float = when (LocalConfiguration.current.customization.deviceLayout) {
+        DeviceLayout.DevicePhone -> {
+            // 手机布局：使用设备物理密度（乘用户微调），不套手表基准放大。
+            // 手机屏幕本就大，按 372px 手表基准放大反而会让字号与触控目标虚胖。
+            LocalDensity.current.density * scale
+        }
+
+        else -> {
+            // 手表布局：按 Oppo Watch 基准（372px）全局放大，保持既有观感
+            val scaleFactor = widthPixels / 372.0f
+            2f * scaleFactor * scale
+        }
+    }
     CompositionLocalProvider(
         LocalDensity provides Density(
             density = density,

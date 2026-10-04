@@ -8,6 +8,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 import cn.spacexc.wearbili.remake.app.settings.ProvideConfiguration
 import cn.spacexc.wearbili.remake.proto.settings.Appearance
+import cn.spacexc.wearbili.remake.proto.settings.DeviceLayout
 
 /**
  * Created by XC-Qan on 2023/3/21.
@@ -191,11 +193,18 @@ fun WearBiliTheme(content: @Composable () -> Unit) {
                 monetEnabled = customization.monetEnabled,
                 themeColorHex = customization.themeColorHex,
             )
-            MaterialTheme(
-                colorScheme = colorScheme,
-                typography = wearbiliTypography,
-            ) {
-                content()
+            // 设备布局规范：手表 / 手机两套密度与字号，动画行为保持一致
+            val layoutSpec = when (customization.deviceLayout) {
+                DeviceLayout.DevicePhone -> PhoneLayoutSpec
+                else -> WatchLayoutSpec
+            }
+            CompositionLocalProvider(LocalLayoutSpec provides layoutSpec) {
+                MaterialTheme(
+                    colorScheme = colorScheme,
+                    typography = wearbiliTypography,
+                ) {
+                    content()
+                }
             }
         }
     }

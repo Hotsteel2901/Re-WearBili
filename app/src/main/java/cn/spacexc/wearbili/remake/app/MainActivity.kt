@@ -50,6 +50,7 @@ import cn.spacexc.wearbili.remake.app.cache.list.CacheListScreen
 import cn.spacexc.wearbili.remake.app.feedback.ui.issues.AllIssuesScreen
 import cn.spacexc.wearbili.remake.app.image.ImageViewerScreen
 import cn.spacexc.wearbili.remake.app.link.qrcode.QrCodeScreen
+import cn.spacexc.wearbili.remake.app.welcome.screens.DeviceLayoutChooserScreen
 import cn.spacexc.wearbili.remake.app.login.qrcode.web.ui.LoginScreen
 import cn.spacexc.wearbili.remake.app.login.qrcode.web.ui.QrCodeLoginScreen
 import cn.spacexc.wearbili.remake.app.main.profile.detail.favorite.detail.ui.FavouriteFolderDetailScreen
@@ -200,6 +201,9 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
                                 ) {
+                                    composable<DeviceLayoutChooserScreen> {
+                                        DeviceLayoutChooserScreen(navController = navController)
+                                    }
                                     composable<StartScreen> {
                                         StartScreen(navController = navController)
                                     }

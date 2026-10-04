@@ -1050,3 +1050,70 @@ val WearBiliIcons.Subtitle: ImageVector
             close()
         }
     }
+
+/** 手表图标：圆角方形表体 + 表带 */
+val WearBiliIcons.Watch: ImageVector
+    get() = wearbiliIcon(name = "watch") {
+        path(fill = SolidColor(Color.White)) {
+            moveTo(8f, 2f)
+            horizontalLineTo(16f)
+            curveTo(16.55f, 2f, 17f, 2.45f, 17f, 3f)
+            verticalLineTo(5f)
+            horizontalLineTo(7f)
+            verticalLineTo(3f)
+            curveTo(7f, 2.45f, 7.45f, 2f, 8f, 2f)
+            close()
+            moveTo(7f, 19f)
+            horizontalLineTo(17f)
+            verticalLineTo(21f)
+            curveTo(17f, 21.55f, 16.55f, 22f, 16f, 22f)
+            horizontalLineTo(8f)
+            curveTo(7.45f, 22f, 7f, 21.55f, 7f, 21f)
+            close()
+            moveTo(6f, 6f)
+            horizontalLineTo(18f)
+            curveTo(19.1f, 6f, 20f, 6.9f, 20f, 8f)
+            verticalLineTo(16f)
+            curveTo(20f, 17.1f, 19.1f, 18f, 18f, 18f)
+            horizontalLineTo(6f)
+            curveTo(4.9f, 18f, 4f, 17.1f, 4f, 16f)
+            verticalLineTo(8f)
+            curveTo(4f, 6.9f, 4.9f, 6f, 6f, 6f)
+            close()
+            moveTo(12f, 8.5f)
+            curveTo(10.07f, 8.5f, 8.5f, 10.07f, 8.5f, 12f)
+            curveTo(8.5f, 13.93f, 10.07f, 15.5f, 12f, 15.5f)
+            curveTo(13.93f, 15.5f, 15.5f, 13.93f, 15.5f, 12f)
+            curveTo(15.5f, 10.07f, 13.93f, 8.5f, 12f, 8.5f)
+            close()
+        }
+    }
+
+/** 手机图标：竖直机身 + 屏幕与 home 条 */
+val WearBiliIcons.Phone: ImageVector
+    get() = wearbiliIcon(name = "phone") {
+        path(fill = SolidColor(Color.White)) {
+            moveTo(7f, 2f)
+            horizontalLineTo(17f)
+            curveTo(18.1f, 2f, 19f, 2.9f, 19f, 4f)
+            verticalLineTo(20f)
+            curveTo(19f, 21.1f, 18.1f, 22f, 17f, 22f)
+            horizontalLineTo(7f)
+            curveTo(5.9f, 22f, 5f, 21.1f, 5f, 20f)
+            verticalLineTo(4f)
+            curveTo(5f, 2.9f, 5.9f, 2f, 7f, 2f)
+            close()
+            moveTo(7f, 4f)
+            verticalLineTo(17.5f)
+            horizontalLineTo(17f)
+            verticalLineTo(4f)
+            close()
+            moveTo(10.5f, 19f)
+            curveTo(10.22f, 19f, 10f, 19.22f, 10f, 19.5f)
+            curveTo(10f, 19.78f, 10.22f, 20f, 10.5f, 20f)
+            horizontalLineTo(13.5f)
+            curveTo(13.78f, 20f, 14f, 19.78f, 14f, 19.5f)
+            curveTo(14f, 19.22f, 13.78f, 19f, 13.5f, 19f)
+            close()
+        }
+    }

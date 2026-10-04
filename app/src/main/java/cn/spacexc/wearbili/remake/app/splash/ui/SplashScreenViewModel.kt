@@ -11,7 +11,9 @@ import cn.spacexc.wearbili.common.domain.data.DataStoreManager
 import cn.spacexc.wearbili.common.isZeroOrNull
 import cn.spacexc.wearbili.remake.app.Application
 import cn.spacexc.wearbili.remake.app.crash.ui.FEEDBACK_SERVER_BASE_URL
-import cn.spacexc.wearbili.remake.app.login.qrcode.web.ui.QrCodeLoginScreen
+import cn.spacexc.wearbili.remake.app.login.LoginScreen
+import cn.spacexc.wearbili.remake.app.settings.SettingsManager
+import cn.spacexc.wearbili.remake.app.welcome.screens.DeviceLayoutChooserScreen
 import cn.spacexc.wearbili.remake.app.main.ui.HomeScreen
 import cn.spacexc.wearbili.remake.app.settings.user.SwitchUserScreen
 import cn.spacexc.wearbili.remake.app.splash.remote.Version
@@ -49,14 +51,21 @@ class SplashScreenViewModel @Inject constructor(
                 dataStoreManager.saveString("buvid", EncryptUtils.generateBuvid())
             }
             if (UserUtils.isUserLoggedIn()) {
-                navController.navigate(HomeScreen(null)) {
-                    popUpTo(0)
+                if (!SettingsManager.getConfiguration().customization.hasChosenDeviceLayout) {
+                    // 首次启动：先选择设备布局（手表/手机）再进主页
+                    navController.navigate(DeviceLayoutChooserScreen) {
+                        popUpTo(0)
+                    }
+                } else {
+                    navController.navigate(HomeScreen(null)) {
+                        popUpTo(0)
+                    }
                 }
             } else {
                 if (UserUtils.mid().isZeroOrNull() && UserUtils.getUsers().isNotEmpty()) {
                     navController.navigate(SwitchUserScreen)
                 } else {
-                    navController.navigate(QrCodeLoginScreen) {
+                    navController.navigate(LoginScreen) {
                         popUpTo(0)
                     }
                 }

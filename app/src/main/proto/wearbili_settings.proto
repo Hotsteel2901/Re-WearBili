@@ -90,6 +90,17 @@ message Customization {
   bool glassEnabled = 7;            // Haze 液态玻璃效果
   AnimationLevel animationLevel = 8;// 动画档位
   string themeColorHex = 9;         // 自定义主色（#RRGGBB），空则用默认粉色
+  DeviceLayout deviceLayout = 10;   // 设备布局（手表/手机）
+  bool hasChosenDeviceLayout = 11;  // 是否已选择过布局（首启引导用）
+}
+
+/**
+ * 设备布局：决定界面密度、字号与触控目标大小。
+ * Watch 为默认值 —— 本应用核心场景是手表，首次安装未选择前按手表呈现。
+ */
+enum DeviceLayout {
+  DeviceWatch = 0;  // 手表布局：小屏、大触控目标、单列
+  DevicePhone = 1;  // 手机布局：更大信息密度、多列、常规触控目标
 }
 
 message AppConfiguration {

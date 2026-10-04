@@ -8,6 +8,7 @@ import androidx.datastore.dataStore
 import cn.spacexc.wearbili.remake.proto.settings.AnimationLevel
 import cn.spacexc.wearbili.remake.proto.settings.AppConfiguration
 import cn.spacexc.wearbili.remake.proto.settings.Appearance
+import cn.spacexc.wearbili.remake.proto.settings.DeviceLayout
 import cn.spacexc.wearbili.remake.proto.settings.QuickToolBarFunction
 import cn.spacexc.wearbili.remake.proto.settings.QuickToolBarSlotCount
 import cn.spacexc.wearbili.remake.proto.settings.RecommendSource
@@ -51,6 +52,10 @@ object AppConfigurationSerializer : Serializer<AppConfiguration> {
                 glassEnabled = true
                 animationLevel = AnimationLevel.Standard
                 themeColorHex = ""
+                // 双端布局：默认手表（核心场景），hasChosenDeviceLayout=false
+                // 会在首启（Splash 后）弹出布局选择页
+                deviceLayout = DeviceLayout.DeviceWatch
+                hasChosenDeviceLayout = false
             }
             playback = playback.copy {
                 // 播放增强默认值：续播与连播开箱即用，片头片尾跳过默认关闭
