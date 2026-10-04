@@ -1,5 +1,10 @@
 package cn.spacexc.wearbili.remake.app.video.info.info.ui
 
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
+import cn.spacexc.wearbili.remake.common.ui.theme.h1
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
+import cn.spacexc.wearbili.remake.common.ui.theme.h3
+
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.collectIsPressedAsState

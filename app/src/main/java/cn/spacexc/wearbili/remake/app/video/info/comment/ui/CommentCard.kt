@@ -87,6 +87,7 @@ import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import cn.spacexc.wearbili.remake.common.ui.toOfficialVerify
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
 
 /* 
 WearBili Copyright (C) 2023 XC

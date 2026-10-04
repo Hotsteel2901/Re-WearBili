@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,6 +47,7 @@ import cn.spacexc.wearbili.remake.app.space.ui.UserSpaceScreen
 import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import coil.compose.AsyncImage
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
 
 /**
  * Created by XC-Qan on 2023/4/12.
@@ -410,7 +410,7 @@ fun TinyUserCard(
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = username,
-            style = MaterialTheme.typography.h2,
+            style = AppTheme.typography.h2,
             modifier = Modifier.onSizeChanged {
                 textHeight = with(localDensity) { it.height.toDp() }
             },

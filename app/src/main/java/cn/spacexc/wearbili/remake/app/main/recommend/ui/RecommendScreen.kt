@@ -1,5 +1,9 @@
 package cn.spacexc.wearbili.remake.app.main.recommend.ui
 
+import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
+import cn.spacexc.wearbili.remake.common.ui.theme.h1
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +23,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -310,12 +313,12 @@ fun LazyItemScope.QuickToolBar(
                             Text(
                                 text = "快捷功能区",
                                 //fontFamily = wearbiliFontFamily,
-                                style = MaterialTheme.typography.h1.copy(fontSize = 12.sp)
+                                style = AppTheme.typography.h1.copy(fontSize = 12.sp)
                             )
                             AutoResizedText(
                                 text = "点击设置快捷入口\n左划以隐藏此卡片\n可在“设置”中重新设置",
                                 //fontFamily = wearbiliFontFamily,
-                                style = MaterialTheme.typography.body1.copy(fontSize = 11.sp),
+                                style = AppTheme.typography.body1.copy(fontSize = 11.sp),
                                 maxLines = 3,
                                 modifier = Modifier.alpha(0.6f)
                             )

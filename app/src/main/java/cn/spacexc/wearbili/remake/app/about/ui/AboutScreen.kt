@@ -51,6 +51,7 @@ import cn.spacexc.wearbili.remake.common.ui.wearBiliAnimateFloatAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.cos
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
 
 /**
  * Created by XC-Qan on 2023/4/21.

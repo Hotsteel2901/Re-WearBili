@@ -48,6 +48,8 @@ import cn.spacexc.wearbili.remake.common.ui.titleBackgroundHorizontalPadding
 import cn.spacexc.wearbili.remake.common.ui.wearBiliAnimateColorAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
+import cn.spacexc.wearbili.remake.common.ui.theme.h3
 
 /**
  * Created by XC-Qan on 2023/8/9.

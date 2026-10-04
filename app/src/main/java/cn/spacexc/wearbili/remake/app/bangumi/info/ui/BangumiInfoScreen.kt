@@ -1,5 +1,10 @@
 package cn.spacexc.wearbili.remake.app.bangumi.info.ui
 
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
+import cn.spacexc.wearbili.remake.common.ui.theme.h1
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
+import cn.spacexc.wearbili.remake.common.ui.theme.h3
+
 import BiliTextIcon
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween

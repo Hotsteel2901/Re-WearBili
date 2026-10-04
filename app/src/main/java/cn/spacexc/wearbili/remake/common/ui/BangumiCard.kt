@@ -40,6 +40,8 @@ import cn.spacexc.wearbili.remake.app.bangumi.info.ui.BANGUMI_ID_TYPE_SSID
 import cn.spacexc.wearbili.remake.app.bangumi.info.ui.BangumiScreen
 import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
 
 /**
  * Created by XC-Qan on 2023/8/8.
@@ -158,7 +160,6 @@ fun LargeBangumiCard(
                         }
                     }
                 }
-
 
             }
 

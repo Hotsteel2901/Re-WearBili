@@ -92,6 +92,7 @@ import cn.spacexc.wearbili.remake.common.ui.theme.time.DefaultTimeSource
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import cn.spacexc.wearbili.remake.proto.settings.Theme
 import kotlinx.coroutines.delay
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
 
 /**
  * Created by XC-Qan on 2023/3/21.

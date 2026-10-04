@@ -45,7 +45,8 @@ import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.titleBackgroundHorizontalPadding
 import cn.spacexc.wearbili.remake.common.ui.wearBiliAnimateColorAsState
 import kotlinx.coroutines.delay
-
+import cn.spacexc.wearbili.remake.common.ui.theme.h1
+import cn.spacexc.wearbili.remake.common.ui.theme.h3
 
 /**
  * Created by XC-Qan on 2023/7/13.
@@ -54,7 +55,6 @@ import kotlinx.coroutines.delay
  * 给！爷！写！注！释！
  * 给！爷！写！注！释！
  */
-
 
 //TODO implement crash screen buttons
 @Composable

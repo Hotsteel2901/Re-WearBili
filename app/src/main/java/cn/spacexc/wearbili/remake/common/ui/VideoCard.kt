@@ -1,5 +1,9 @@
 package cn.spacexc.wearbili.remake.common.ui
 
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
+import cn.spacexc.wearbili.remake.common.ui.theme.h3
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

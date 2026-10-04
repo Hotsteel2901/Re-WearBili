@@ -1,5 +1,8 @@
 package cn.spacexc.wearbili.remake.app.cache.list
 
+import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -86,7 +88,7 @@ fun CacheListScreen(
                     stickyHeader(key = "text1") {
                         Text(
                             text = "正在缓存",
-                            style = MaterialTheme.typography.h2,
+                            style = AppTheme.typography.h2,
                             color = Color.White
                         )
                     }
@@ -114,7 +116,7 @@ fun CacheListScreen(
                     stickyHeader(key = "text2") {
                         Text(
                             text = "已缓存",
-                            style = MaterialTheme.typography.h2,
+                            style = AppTheme.typography.h2,
                             color = Color.White
                         )
                     }

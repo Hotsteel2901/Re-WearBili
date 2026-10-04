@@ -76,6 +76,7 @@ import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import cn.spacexc.wearbili.remake.common.ui.titleBackgroundHorizontalPadding
 import cn.spacexc.wearbili.remake.common.ui.toOfficialVerify
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
 
 /**
  * Created by XC-Qan on 2023/4/9.

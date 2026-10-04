@@ -79,6 +79,7 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
+import cn.spacexc.wearbili.remake.common.ui.theme.body1
 
 /**
  * Created by XC-Qan on 2023/4/30.

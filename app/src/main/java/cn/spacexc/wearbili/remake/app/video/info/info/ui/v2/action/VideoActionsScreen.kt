@@ -1,5 +1,9 @@
 package cn.spacexc.wearbili.remake.app.video.info.info.ui.v2.action
 
+import cn.spacexc.wearbili.remake.common.ui.theme.h1
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
+import cn.spacexc.wearbili.remake.common.ui.theme.h3
+
 import BiliTextIcon
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

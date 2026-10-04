@@ -38,6 +38,7 @@ import like.BubbleColor
 import like.CircleColor
 import like.LikeButton
 import like.LikeButtonState
+import cn.spacexc.wearbili.remake.common.ui.theme.body2
 
 /**
  * Created by XC-Qan on 2023/4/24.
