@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.google.devtools.ksp) apply false
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.baselineprofile) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
 }
 
 // 强制统一 kotlinx-metadata-jvm 版本, 避免多模块间版本冲突

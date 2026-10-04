@@ -6,10 +6,10 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 25
         targetSdkVersion 36
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
@@ -31,8 +31,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.appcompat.v7
+    // 已移除 com.android.support:appcompat-v7:28.0.0 —— 旧 Support 库与 AndroidX 冲突，
+    // 本模块仅承载 ijkplayer 的 .so 原生库，不需要 appcompat。
     testImplementation libs.junit
-    androidTestImplementation libs.runner
-    androidTestImplementation libs.espresso.core
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 }

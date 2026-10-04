@@ -10,7 +10,7 @@ android {
     buildToolsVersion = libs.versions.buildTool.get()
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 25
         lint.targetSdk = 36
 
     }

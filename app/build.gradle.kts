@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.google.devtools.ksp)
-    id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -19,7 +19,7 @@ android {
     val releaseNumber = 3
     defaultConfig {
         applicationId = "cn.spacexc.wearbili.remake"
-        minSdk = 21
+        minSdk = 25
         targetSdk = 36
         compileSdk = 36
         versionCode = 47
@@ -117,6 +117,8 @@ dependencies {
     implementation(libs.androidx.material3.window.size)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.palette.ktx)
+    // AGP 9 内建 Kotlin 后，parcelize 运行时依赖不再自动附带，需显式声明
+    implementation(libs.kotlin.parcelize.runtime)
 
     implementation(libs.kotlinx.metadata.jvm)
     implementation(project(":app:common"))

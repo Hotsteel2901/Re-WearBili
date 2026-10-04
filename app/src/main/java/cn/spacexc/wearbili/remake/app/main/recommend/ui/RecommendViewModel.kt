@@ -15,7 +15,7 @@ import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import cn.spacexc.wearbili.remake.proto.settings.RecommendSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.request.header
-import io.ktor.client.request.userAgent
+import io.ktor.http.userAgent
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject

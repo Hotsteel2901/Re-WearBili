@@ -5,7 +5,6 @@ accompanistPlaceholderMaterial = "0.36.0"
 activityVersion = "1.10.1"
 appCenterSdkVersion = "5.0.6"
 appcompat = "1.7.0"
-appcompatV7 = "28.0.0"
 atomicfu = "0.27.0"
 coilCompose = "2.7.0"
 compose = "1.7.6"
@@ -21,12 +20,10 @@ coreVersion = "3.5.3"
 crashx = "v6.0.19"
 danmakuflamemaster = "0.9.25"
 datastore = "1.1.7"
-espressoCoreVersion = "3.0.2"
 gson = "2.13.1"
 hiltAndroid = "2.60.1"
 hiltWork = "1.4.0"
 jsoup = "1.21.1"
-runner = "1.0.2"
 junitVersion = "4.13.2"
 rxhttp = "3.3.0"
 okhttp = "4.12.0"
@@ -43,11 +40,13 @@ paletteKtx = "1.0.0"
 
 
 compileSdk = "36"
+minSdk = "25"
+targetSdk = "36"
 jvm-target = "17"
 photoview = "2.3.0"
 protobuflite = "3.25.5"
 protobuf = "0.10.0"
-room = "2.6.1"
+room = "2.8.5"
 buildTool = "36.0.0"
 
 agp = "9.4.1"
@@ -62,7 +61,7 @@ benchmarkMacroJunit4 = "1.5.0"
 baselineprofile = "1.5.0"
 profileinstaller = "1.4.1"
 
-leancloud = "8.2.26"
+leancloud = "8.2.28"
 rxjava = "2.1.1"
 
 ijkplayer = "0.8.8"
@@ -107,6 +106,7 @@ hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", ve
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 bilibili-sdk = { module = "com.github.SpaceXC:Bilibili-Kotlin-SDK", version.ref = "bilibilisdk" }
+kotlin-parcelize-runtime = { module = "org.jetbrains.kotlin:kotlin-parcelize-runtime", version.ref = "kotlin" }
 
 androidx-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClass" }
 androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
@@ -114,17 +114,14 @@ androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntime" }
 appcenter-analytics = { module = "com.microsoft.appcenter:appcenter-analytics", version.ref = "appCenterSdkVersion" }
 appcenter-crashes = { module = "com.microsoft.appcenter:appcenter-crashes", version.ref = "appCenterSdkVersion" }
-appcompat-v7 = { module = "com.android.support:appcompat-v7", version.ref = "appcompatV7" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilCompose" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 crashx = { module = "com.github.TutorialsAndroid:crashx", version.ref = "crashx" }
 danmaku-flame-master = { module = "com.github.ctiao:DanmakuFlameMaster", version.ref = "danmakuflamemaster" }
-espresso-core = { module = "com.android.support.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 leancloud-storage = { module = "cn.leancloud:storage-android", version.ref = "leancloud" }
-runner = { module = "com.android.support.test:runner", version.ref = "runner" }
 rxjava-rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxjava" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
@@ -166,3 +163,4 @@ androidTest = { id = "com.android.test", version.ref = "agp" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
