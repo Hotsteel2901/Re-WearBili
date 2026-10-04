@@ -1,6 +1,7 @@
 package cn.spacexc.wearbili.remake.common.ui
 
 import androidx.compose.animation.core.tween
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -29,9 +30,16 @@ import androidx.compose.ui.unit.dp
  * 给！爷！写！注！释！
  */
 
-val CardBorderColor = Color(54, 54, 54, 255)
+/**
+ * 卡片颜色已全面接入 MaterialTheme（2026 MD3E 改版）：
+ * 亮色主题下不再是硬编码深灰，跟随主题与 Monet 取色。
+ *
+ * 顶层常量改为 @Composable getter，允许在参数默认值处直接使用。
+ */
+val CardBorderColor: Color @Composable get() = MaterialTheme.colorScheme.outlineVariant
 val CardBorderWidth = 0.4f.dp
-val CardBackgroundColor = Color(38, 38, 38, 77)
+val CardBackgroundColor: Color @Composable get() =
+    MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f)
 
 @Composable
 fun Card(
@@ -40,7 +48,7 @@ fun Card(
     shape: Shape = RoundedCornerShape(10.dp),
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
-    borderColor: Color = Color(54, 54, 54, 255),
+    borderColor: Color = CardBorderColor,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -67,7 +75,7 @@ fun Card(
                     end = Offset.Infinite
                 )
             )
-            .background(color = Color(38, 38, 38, 77))
+            .background(color = CardBackgroundColor)
             .padding(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 10.dp)
             .fillMaxWidth(),
     ) {
@@ -154,20 +162,16 @@ fun Card(
     outerPaddingValues: PaddingValues = PaddingValues(vertical = 4.dp),
     content: @Composable BoxScope.() -> Unit,
 ) {
+    val highlightColor = MaterialTheme.colorScheme.primary
     val secondColor by wearBiliAnimateColorAsState(
-        targetValue = if (isHighlighted) BilibiliPink else Color.Transparent,
+        targetValue = if (isHighlighted) highlightColor else Color.Transparent,
     )
     val cardBorderColor by wearBiliAnimateColorAsState(
-        targetValue = if (isHighlighted) BilibiliPink else CardBorderColor,
+        targetValue = if (isHighlighted) highlightColor else CardBorderColor,
         animationSpec = tween()
     )
     val cardBackgroundColor by wearBiliAnimateColorAsState(
-        targetValue = if (isHighlighted) Color(
-            231,
-            86,
-            136,
-            26
-        ) else CardBackgroundColor,
+        targetValue = if (isHighlighted) highlightColor.copy(alpha = 0.10f) else CardBackgroundColor,
         animationSpec = tween()
 
     )

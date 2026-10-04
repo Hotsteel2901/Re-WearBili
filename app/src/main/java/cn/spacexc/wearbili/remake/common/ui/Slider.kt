@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.rememberSliderState
@@ -66,7 +67,7 @@ fun GradientSlider(
                 .fillMaxWidth()
                 .height(24.dp)
                 .clip(CircleShape)
-                .background(Color(38, 38, 38, 128))
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f))
                 .onSizeChanged { size ->
                     width = size.width
                 }
@@ -207,7 +208,8 @@ private fun Track(
     sliderState: SliderState,
     modifier: Modifier = Modifier,
     height: Dp = TrackHeight,
-    brush: Brush = Brush.horizontalGradient(listOf(Color(50, 25, 33), BilibiliPink))
+    brush: Brush = Brush.horizontalGradient(listOf(Color(50, 25, 33), BilibiliPink)),
+    trackColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f)
 ) {
 
     Canvas(
@@ -228,7 +230,8 @@ private fun Track(
             0f,
             height,
             coercedValueAsFraction,
-            brush
+            brush,
+            trackColor
         )
     }
 }
@@ -240,7 +243,8 @@ fun DrawScope.drawTrack(
     activeRangeStart: Float,
     height: Dp,
     activeRangeEnd: Float,
-    brush: Brush = Brush.horizontalGradient(listOf(Color(50, 25, 33), BilibiliPink))
+    brush: Brush = Brush.horizontalGradient(listOf(Color(50, 25, 33), BilibiliPink)),
+    trackColor: Color = Color(38, 38, 38, 128)
 ) {
     val isRtl = layoutDirection == LayoutDirection.Rtl
     val sliderLeft = Offset(0f, center.y)
@@ -249,7 +253,7 @@ fun DrawScope.drawTrack(
     val sliderEnd = if (isRtl) sliderLeft else sliderRight
     val trackStrokeWidth = height.toPx()
     drawLine(
-        Color(38, 38, 38, 128),
+        trackColor,
         sliderStart,
         sliderEnd,
         trackStrokeWidth,

@@ -63,6 +63,7 @@ import cn.spacexc.wearbili.remake.app.cache.domain.database.VideoCacheFileInfo
 import cn.spacexc.wearbili.remake.app.player.videoplayer.defaultplayer.IjkVideoPlayerScreen
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
 import cn.spacexc.wearbili.remake.app.video.info.ui.VideoInformationScreen
+import androidx.compose.material3.MaterialTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import coil.compose.AsyncImage
@@ -211,6 +212,7 @@ fun VideoCardContent(
             Text(
                 text = videoName,
                 style = AppTheme.typography.h3,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()
@@ -221,15 +223,15 @@ fun VideoCardContent(
                         text = views,
                         fontSize = 9.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
-                        modifier = Modifier.alpha(0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alpha(0.9f),
                         overflow = TextOverflow.Ellipsis,
                         spacingWidth = 1.sp
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_view_count),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -242,15 +244,15 @@ fun VideoCardContent(
                         text = uploader,
                         fontSize = 9.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
-                        modifier = Modifier.alpha(0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alpha(0.9f),
                         overflow = TextOverflow.Ellipsis,
                         spacingWidth = 1.sp
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_uploader),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -263,15 +265,15 @@ fun VideoCardContent(
                         text = danmakus,
                         fontSize = 9.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
-                        modifier = Modifier.alpha(0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alpha(0.9f),
                         overflow = TextOverflow.Ellipsis,
                         spacingWidth = 1.sp
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_danmaku),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -317,7 +319,7 @@ fun VideoCardContent(
                                 text = badge,
                                 fontSize = 8.sp,
                                 fontFamily = wearbiliFontFamily,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center
                             )
@@ -346,7 +348,7 @@ fun VideoCardContent(
                         Icon(
                             painter = painterResource(id = R.drawable.icon_view_count),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -361,7 +363,7 @@ fun VideoCardContent(
                         },
                         fontSize = 9.spx,
                         modifier = Modifier.alpha(0.7f),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         inlineContent = inlineTextContent,
                         //maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -370,15 +372,15 @@ fun VideoCardContent(
                         text = views,
                         fontSize = 9.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
-                        modifier = Modifier.alpha(0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alpha(0.9f),
                         overflow = TextOverflow.Ellipsis,
                         spacingWidth = 1.sp
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_view_count),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -391,15 +393,15 @@ fun VideoCardContent(
                         text = uploader,
                         fontSize = 9.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
-                        modifier = Modifier.alpha(0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alpha(0.9f),
                         overflow = TextOverflow.Ellipsis,
                         spacingWidth = 1.sp
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_uploader),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -416,7 +418,7 @@ fun VideoCardContent(
                         Icon(
                             painter = painterResource(id = R.drawable.icon_uploader),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -431,7 +433,7 @@ fun VideoCardContent(
                         },
                         fontSize = 9.spx,
                         modifier = Modifier.alpha(0.7f),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         inlineContent = inlineTextContent,
                         //maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -442,15 +444,15 @@ fun VideoCardContent(
                         text = danmakus,
                         fontSize = 9.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
-                        modifier = Modifier.alpha(0.7f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alpha(0.9f),
                         overflow = TextOverflow.Ellipsis,
                         spacingWidth = 1.sp
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_danmaku),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -466,7 +468,7 @@ fun VideoCardContent(
                         Icon(
                             painter = painterResource(id = R.drawable.icon_danmaku),
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(end = 2.dp)
@@ -481,7 +483,7 @@ fun VideoCardContent(
                         },
                         fontSize = 9.spx,
                         modifier = Modifier.alpha(0.7f),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         inlineContent = inlineTextContent,
                         //maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -557,7 +559,7 @@ fun VideoCacheCard(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.ArrowForward,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         IconText(
@@ -582,12 +584,12 @@ fun VideoCacheCard(
                             modifier = Modifier.clickVfx(onClick = {
                                 onBack()
                             }),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.ArrowBackIosNew,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -646,7 +648,7 @@ fun VideoCacheCard(
                                         painter = painterResource(id = R.drawable.icon_uploader),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize(),
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 IconText(
@@ -659,7 +661,7 @@ fun VideoCacheCard(
                                         imageVector = Icons.Outlined.VideoLibrary,
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize(),
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 IconText(
@@ -672,7 +674,7 @@ fun VideoCacheCard(
                                         imageVector = Icons.Outlined.FileCopy,
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize(),
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -681,13 +683,13 @@ fun VideoCacheCard(
                             IconText(
                                 text = cacheInfo.warnings,
                                 style = AppTheme.typography.body1,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.alpha(0.7f)
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.WarningAmber,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
