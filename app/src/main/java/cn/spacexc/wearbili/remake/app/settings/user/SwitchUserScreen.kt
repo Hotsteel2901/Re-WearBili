@@ -29,6 +29,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -326,7 +327,7 @@ fun SwitchUserScreen(
                                                     fontFamily = wearbiliFontFamily,
                                                     fontWeight = FontWeight.Medium,
                                                     fontSize = uidFontSize.sp,
-                                                    color = Color.White,
+                                                    color = MaterialTheme.colorScheme.onSurface,
                                                     modifier = Modifier.alpha(uidAlpha)
                                                 )
                                             }
@@ -353,7 +354,7 @@ fun SwitchUserScreen(
                                             fontFamily = wearbiliFontFamily,
                                             fontWeight = FontWeight.Medium,
                                             fontSize = 12.sp,
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -59,7 +60,7 @@ fun SharedTransitionScope.UserSpaceDynamicScreen(
                         text = "${user.name}的",
                         fontFamily = wearbiliFontFamily,
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .alpha(0.7f)
                             .fillMaxWidth(),
@@ -68,7 +69,7 @@ fun SharedTransitionScope.UserSpaceDynamicScreen(
                     )
                     Text(
                         text = "动态",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = wearbiliFontFamily,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,

@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Badge
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -171,7 +172,7 @@ fun StartScreen(
                         text = "轻点屏幕以开始",
                         fontFamily = wearbiliFontFamily,
                         fontSize = 12.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         letterSpacing = 0.5.sp
                     )
                 }

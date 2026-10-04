@@ -196,7 +196,7 @@ fun ColumnScope.MessageCard(isTalker: Boolean, message: Message, shouldJoinNext:
                     fontFamily = wearbiliFontFamily,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -224,7 +224,7 @@ fun ColumnScope.MessageCard(isTalker: Boolean, message: Message, shouldJoinNext:
                         append("不支持的消息类型")
                     }
                 },
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 12.sp,
                 fontFamily = wearbiliFontFamily,
                 modifier = Modifier.padding(8.dp)

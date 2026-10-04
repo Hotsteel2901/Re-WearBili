@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -89,7 +90,7 @@ fun CacheListScreen(
                         Text(
                             text = "正在缓存",
                             style = AppTheme.typography.h2,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     unCompletedTasks.forEach { task ->
@@ -117,7 +118,7 @@ fun CacheListScreen(
                         Text(
                             text = "已缓存",
                             style = AppTheme.typography.h2,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     completedTasks.forEach { task ->

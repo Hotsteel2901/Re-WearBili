@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -49,7 +50,7 @@ fun AllIssuesScreen(viewModel: AllIssuesViewModel = hiltViewModel(), navControll
                                 text = item.exceptionDescription,
                                 fontSize = 13.sp,
                                 fontFamily = wearbiliFontFamily,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
@@ -58,13 +59,13 @@ fun AllIssuesScreen(viewModel: AllIssuesViewModel = hiltViewModel(), navControll
                                 text = item.shortId,
                                 fontSize = 10.sp,
                                 fontFamily = wearbiliFontFamily,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "${item.reportTime.toDateStr()}上报",
                                 fontSize = 10.sp,
                                 fontFamily = wearbiliFontFamily,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "状态：${
@@ -76,7 +77,7 @@ fun AllIssuesScreen(viewModel: AllIssuesViewModel = hiltViewModel(), navControll
                                 }",
                                 fontSize = 10.sp,
                                 fontFamily = wearbiliFontFamily,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }

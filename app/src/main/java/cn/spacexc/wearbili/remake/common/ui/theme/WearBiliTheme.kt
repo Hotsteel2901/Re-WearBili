@@ -2,7 +2,9 @@ package cn.spacexc.wearbili.remake.common.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.LocalContentColor as M2LocalContentColor
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor as M3LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -203,7 +205,19 @@ fun WearBiliTheme(content: @Composable () -> Unit) {
                     colorScheme = colorScheme,
                     typography = wearbiliTypography,
                 ) {
-                    content()
+                    // M2/M3 混用期兜底（基建级修复）：
+                    // MaterialTheme(M3) 只会经由 Surface 提供 M3 的 LocalContentColor；
+                    // 项目里仍有大量 M2 Text/Icon 与未显式指定颜色的组件，且根背景
+                    // CirclesBackground 用裸 Box（非 Surface），两套 Local 均无人提供，
+                    // 默认值回落 Compose 的 Color.Black —— 暗色模式下黑字黑底不可读。
+                    // 在主题根部把 M2/M3 两套 LocalContentColor 统一钉到 onSurface，
+                    // 所有未显式指定前景色的文本/图标从此自动跟随明暗主题。
+                    CompositionLocalProvider(
+                        M2LocalContentColor provides colorScheme.onSurface,
+                        M3LocalContentColor provides colorScheme.onSurface,
+                    ) {
+                        content()
+                    }
                 }
             }
         }

@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -631,13 +632,13 @@ fun CommentInfoItem(
             modifier = Modifier
                 .alpha(0.6f)
                 .size(textHeight),
-            tint = Color.White
+            tint = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(2.dp))
         Text(text = content,
             fontSize = 10.sp,
             fontFamily = wearbiliFontFamily,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .alpha(0.6f)
                 .onGloballyPositioned {
@@ -668,14 +669,14 @@ fun CommentInfoItem(
             modifier = Modifier
                 .alpha(0.6f)
                 .size(textHeight),
-            tint = Color.White
+            tint = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(2.dp))
         Text(
             text = content,
             fontSize = 10.sp,
             fontFamily = wearbiliFontFamily,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .alpha(0.6f)
                 .onGloballyPositioned {

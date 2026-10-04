@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,7 +80,7 @@ fun DeviceDiscoverScreen(
             Text(
                 text = "需要连接Wi-Fi才能投屏哦",
                 fontSize = 16.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -90,12 +91,12 @@ fun DeviceDiscoverScreen(
                         Text(
                             text = "选择设备",
                             fontSize = 22.sp,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                         IconText(
                             text = wifiName ?: "",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.alpha(0.8f),
                             fontWeight = FontWeight.Medium,
                             fontSize = 13.sp
@@ -103,12 +104,12 @@ fun DeviceDiscoverScreen(
                             Icon(
                                 imageVector = Icons.Default.Wifi,
                                 contentDescription = null,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Text(
                             text = "选择与您手表网络相同的设备并开始投射视频内容",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.alpha(0.7f)
@@ -124,7 +125,7 @@ fun DeviceDiscoverScreen(
                         {
                             IconText(
                                 text = device.friendlyName,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
                             ) {
@@ -133,7 +134,7 @@ fun DeviceDiscoverScreen(
                                         id = if (device.isBiliDevice) R.drawable.icon_cloud_tv_bilibili else R.drawable.icon_tv
                                     ),
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }

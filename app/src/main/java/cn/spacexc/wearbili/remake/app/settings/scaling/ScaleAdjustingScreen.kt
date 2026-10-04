@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,7 +67,7 @@ fun ScaleAdjustingScreen(navController: NavController) {
         ) {
             Text(
                 text = "缩放调整",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
@@ -75,7 +76,7 @@ fun ScaleAdjustingScreen(navController: NavController) {
             )
             Text(
                 text = "在下方条型区域点击以调整控件缩放",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
@@ -107,7 +108,7 @@ fun ScaleAdjustingScreen(navController: NavController) {
                         text = "${(scale * 100).toInt()}%",
                         fontFamily = wearbiliFontFamily,
                         fontSize = 14.sp,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "1000%",

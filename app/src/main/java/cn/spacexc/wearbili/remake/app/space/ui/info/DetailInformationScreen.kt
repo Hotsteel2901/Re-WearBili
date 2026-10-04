@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -79,7 +80,7 @@ fun DetailInformationScreen(
             )
             Text(
                 text = "详情",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -111,13 +112,13 @@ fun DetailInformationScreen(
                     modifier = Modifier.height(
                         with(localDensity) { 14.sp.toDp() }
                     ),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = user.mid.toString(),
                     fontSize = 12.sp,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontFamily = wearbiliFontFamily
                 )
             }
@@ -132,13 +133,13 @@ fun DetailInformationScreen(
                                 with(localDensity) { 12.sp.toDp() }
                             )
                             .offset(y = 3.dp),
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = user.sign,
                         fontSize = 12.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = wearbiliFontFamily
                     )
                 }
@@ -166,7 +167,7 @@ fun DetailInformationScreen(
                     Text(
                         text = user.official?.title ?: "",
                         fontSize = 12.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = wearbiliFontFamily
                     )
                 }

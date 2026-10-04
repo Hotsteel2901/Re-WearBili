@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Redeem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -421,7 +422,7 @@ fun SharedTransitionScope.DynamicContent(
                         .padding(6.dp)) {
                         Text(
                             text = item.modules.moduleDynamic.major?.archive?.title ?: "",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Medium,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
@@ -431,7 +432,7 @@ fun SharedTransitionScope.DynamicContent(
                         Row(modifier = Modifier.alpha(0.6f)) {
                             IconText(
                                 text = item.modules.moduleDynamic.major?.archive?.stat?.play ?: "",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 9.sp * textSizeScale,
                                 fontWeight = FontWeight.Medium,
                             ) {
@@ -439,14 +440,14 @@ fun SharedTransitionScope.DynamicContent(
                                     painter = painterResource(id = R.drawable.icon_view_count),
                                     contentDescription = null,
                                     modifier = Modifier,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.width(6.dp))
                             IconText(
                                 text = item.modules.moduleDynamic.major?.archive?.stat?.danmaku
                                     ?: "",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 9.sp * textSizeScale,
                                 fontWeight = FontWeight.Medium,
                             ) {
@@ -454,7 +455,7 @@ fun SharedTransitionScope.DynamicContent(
                                     painter = painterResource(id = R.drawable.icon_danmaku),
                                     contentDescription = null,
                                     modifier = Modifier,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -465,7 +466,7 @@ fun SharedTransitionScope.DynamicContent(
             "DYNAMIC_TYPE_PGC", "DYNAMIC_TYPE_PGC_UNION" -> {/*Text(
                     text = "${item.modules.moduleDynamic.major?.pgc?.title} 更新了",
                     fontFamily = puhuiFamily,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 10.sp
                 )*/
                 Column(modifier = Modifier.clickVfx {
@@ -522,7 +523,7 @@ fun SharedTransitionScope.DynamicContent(
                             .padding(6.dp)) {
                             Text(
                                 text = item.modules.moduleDynamic.major?.pgc?.title ?: "",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
@@ -537,11 +538,11 @@ fun SharedTransitionScope.DynamicContent(
                                     imageVector = Icons.Outlined.PlayCircle,
                                     contentDescription = null,
                                     modifier = Modifier.size(textHeight),
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = item.modules.moduleDynamic.major?.pgc?.stat?.play ?: "",
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 9.sp * textSizeScale,
                                     fontWeight = FontWeight.Medium,
                                     modifier = Modifier.onGloballyPositioned {
@@ -568,13 +569,13 @@ fun SharedTransitionScope.DynamicContent(
                         item.modules.moduleDynamic.major?.article?.let { article ->
                             Text(
                                 text = article.title,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 14.sp
                             )
                             Text(
                                 text = article.desc,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 12.sp,
                                 modifier = Modifier.alpha(0.7f)
@@ -612,7 +613,7 @@ fun SharedTransitionScope.DynamicContent(
                                 painter = painterResource(id = R.drawable.icon_comment),
                                 contentDescription = null,
                                 modifier = Modifier,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -621,7 +622,7 @@ fun SharedTransitionScope.DynamicContent(
                                 painter = painterResource(id = R.drawable.icon_thumb_up),
                                 contentDescription = null,
                                 modifier = Modifier,
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -646,7 +647,7 @@ fun SharedTransitionScope.DynamicContent(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_thumb_up),
                         contentDescription = null,
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -658,7 +659,7 @@ fun SharedTransitionScope.DynamicContent(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_comment),
                         contentDescription = null,
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -670,7 +671,7 @@ fun SharedTransitionScope.DynamicContent(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_dynamic_forward),
                         contentDescription = null,
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

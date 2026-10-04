@@ -19,6 +19,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -121,7 +122,7 @@ fun UpdateScreen(
                         fontFamily = wearbiliFontFamily,
                         fontWeight = FontWeight.Normal,
                         fontSize = 11.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = if (isRound()) TextAlign.Center else TextAlign.Start
                     )
@@ -208,7 +209,7 @@ fun UpdateCard(
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
                     text = "更新",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontFamily = wearbiliFontFamily,
                     fontSize = 13.sp
@@ -226,13 +227,13 @@ fun UpdateCard(
             IconText(
                 text = formattedDate,
                 fontSize = 9.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.alpha(0.7f)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Update,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

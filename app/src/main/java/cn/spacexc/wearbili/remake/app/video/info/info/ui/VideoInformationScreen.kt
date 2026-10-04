@@ -42,6 +42,7 @@ import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -263,7 +264,7 @@ fun VideoBasicInformationScreen(
                             painter = painterResource(id = R.drawable.icon_view_count),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -277,7 +278,7 @@ fun VideoBasicInformationScreen(
                             imageVector = Icons.Outlined.Timer,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -290,7 +291,7 @@ fun VideoBasicInformationScreen(
                             painter = painterResource(id = R.drawable.icon_danmaku),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -303,7 +304,7 @@ fun VideoBasicInformationScreen(
                             painter = painterResource(id = R.drawable.icon_time),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -321,7 +322,7 @@ fun VideoBasicInformationScreen(
                             imageVector = Icons.Outlined.Movie,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -414,14 +415,14 @@ fun VideoBasicInformationScreen(
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_group_outlined),
                                         contentDescription = null,
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(textHeight * 0.9f)
                                 )
                             }
@@ -559,7 +560,7 @@ fun VideoBasicInformationScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.PlayCircle,
-                                        tint = Color.White,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         contentDescription = null
                                     )
                                     Text(
@@ -628,7 +629,7 @@ fun VideoBasicInformationScreen(
                             icon = {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Outlined.SendToMobile,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     contentDescription = null,
                                     modifier = Modifier.align(Alignment.Center)
                                 )
@@ -765,7 +766,7 @@ fun VideoBasicInformationScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.History,
-                                        tint = Color.White,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         contentDescription = null
                                     )
                                 }
@@ -784,7 +785,7 @@ fun VideoBasicInformationScreen(
                             icon = {
                                 Icon(
                                     imageVector = Icons.Outlined.FileDownload,
-                                    tint = Color.White,
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     contentDescription = null,
                                     modifier = Modifier.align(Alignment.Center)
                                 )

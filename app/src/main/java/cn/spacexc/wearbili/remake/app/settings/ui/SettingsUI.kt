@@ -295,7 +295,7 @@ fun SettingsScreen(
             item {
                 Text(
                     text = "设置",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontFamily = wearbiliFontFamily,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,

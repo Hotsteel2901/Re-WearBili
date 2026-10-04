@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -75,7 +76,7 @@ fun SharedTransitionScope.BasicInformationScreen(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = wearbiliFontFamily,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.sharedBounds(
                     rememberSharedContentState(key = "username"),
                     animatedVisibilityScope = animatedContentScope
@@ -96,7 +97,7 @@ fun SharedTransitionScope.BasicInformationScreen(
                     androidx.compose.material.Text(
                         text = viewModel.stat?.follower?.toShortChinese() ?: "null",
                         fontSize = 12.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.shimmerPlaceHolder(viewModel.stat == null)
                     )
@@ -104,7 +105,7 @@ fun SharedTransitionScope.BasicInformationScreen(
                     androidx.compose.material.Text(
                         text = "粉丝",
                         fontSize = 11.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.alpha(0.8f)
                     )
@@ -123,7 +124,7 @@ fun SharedTransitionScope.BasicInformationScreen(
                     androidx.compose.material.Text(
                         text = viewModel.stat?.following?.toShortChinese() ?: "null",
                         fontSize = 12.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.shimmerPlaceHolder(viewModel.stat == null)
                     )
@@ -131,7 +132,7 @@ fun SharedTransitionScope.BasicInformationScreen(
                     androidx.compose.material.Text(
                         text = "关注",
                         fontSize = 11.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.alpha(0.8f)
                     )
@@ -148,7 +149,7 @@ fun SharedTransitionScope.BasicInformationScreen(
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize(),
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

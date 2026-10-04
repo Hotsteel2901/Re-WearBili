@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.VideoLibrary
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -100,7 +101,7 @@ fun FavoriteFoldersScreen(
                             Text(
                                 text = defaultFolder.data.title,
                                 fontFamily = wearbiliFontFamily,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Medium
                             )
@@ -114,7 +115,7 @@ fun FavoriteFoldersScreen(
                                     imageVector = Icons.Outlined.VideoLibrary,
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -159,7 +160,7 @@ fun FavoriteFoldersScreen(
                                     Text(
                                         text = folder.data.title,
                                         fontFamily = wearbiliFontFamily,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Medium,
                                         maxLines = 1,
@@ -175,7 +176,7 @@ fun FavoriteFoldersScreen(
                                             imageVector = Icons.Outlined.VideoLibrary,
                                             contentDescription = null,
                                             modifier = Modifier.fillMaxSize(),
-                                            tint = Color.White
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -132,7 +133,7 @@ fun ArticleScreen(
                         ) {
                             Text(
                                 text = "「",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.ExtraBold,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -143,7 +144,7 @@ fun ArticleScreen(
                             )
                             Text(
                                 text = "」",
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.ExtraBold,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -216,7 +217,7 @@ fun ArticleScreen(
                         Text(
                             text = it.image.imageCaption,
                             fontSize = 9.sp,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .alpha(0.7f)

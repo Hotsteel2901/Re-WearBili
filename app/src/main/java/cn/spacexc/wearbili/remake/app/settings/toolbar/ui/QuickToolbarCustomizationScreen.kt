@@ -24,6 +24,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.NotInterested
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -81,7 +82,7 @@ val functionList = listOf(QuickToolbarFunctionDetail(name = "历史", icon = {
         imageVector = Icons.Default.History,
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
-        tint = Color.White
+        tint = MaterialTheme.colorScheme.onSurface
     )*/
 }, type = QuickToolBarFunction.History, action = {
     it.navigate(HistoryScreen)
@@ -90,7 +91,7 @@ val functionList = listOf(QuickToolbarFunctionDetail(name = "历史", icon = {
         imageVector = Icons.Default.Search,
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
-        tint = Color.White
+        tint = MaterialTheme.colorScheme.onSurface
     )*/
     BiliTextIcon(icon = "eacb", size = 20.sp, modifier = Modifier.offset(y = (-0.5).dp))
 }, type = QuickToolBarFunction.Search, action = {
@@ -100,7 +101,7 @@ val functionList = listOf(QuickToolbarFunctionDetail(name = "历史", icon = {
         imageVector = Icons.Outlined.FileDownload,
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
-        tint = Color.White
+        tint = MaterialTheme.colorScheme.onSurface
     )*/
     BiliTextIcon(icon = "eaa2", size = 20.sp, modifier = Modifier.offset(y = (-0.5).dp))
 }, type = QuickToolBarFunction.Cache, action = {
@@ -110,7 +111,7 @@ val functionList = listOf(QuickToolbarFunctionDetail(name = "历史", icon = {
         imageVector = Icons.Outlined.FileDownload,
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
-        tint = Color.White
+        tint = MaterialTheme.colorScheme.onSurface
     )*/
     BiliTextIcon(icon = "ea94", size = 20.sp, modifier = Modifier.offset(y = (-0.5).dp))
 }, type = QuickToolBarFunction.Message, action = {
@@ -122,7 +123,7 @@ val functionList = listOf(QuickToolbarFunctionDetail(name = "历史", icon = {
         modifier = Modifier
             .fillMaxSize()
             .offset(y = (-0.5).dp),
-        tint = Color.White
+        tint = MaterialTheme.colorScheme.onSurface
     )
 }, type = QuickToolBarFunction.Favourite, action = {
     it.navigate(FavoriteFoldersScreen)
@@ -131,7 +132,7 @@ val functionList = listOf(QuickToolbarFunctionDetail(name = "历史", icon = {
         imageVector = Icons.Outlined.NotInterested,
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),
-        tint = Color.White
+        tint = MaterialTheme.colorScheme.onSurface
     )
 }, type = QuickToolBarFunction.None, action = {
 }))

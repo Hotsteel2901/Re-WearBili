@@ -36,6 +36,7 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -196,7 +197,7 @@ fun BangumiInfoScreen(
                                                 append("分")
                                             }
                                         },
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontSize = 7.sp,
                                         fontFamily = wearbiliFontFamily,
                                         fontWeight = FontWeight.Medium,
@@ -260,7 +261,7 @@ fun BangumiInfoScreen(
                                         Icon(
                                             imageVector = Icons.Outlined.Add,
                                             contentDescription = null,
-                                            tint = Color.White
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                 }
@@ -288,7 +289,7 @@ fun BangumiInfoScreen(
                                     painter = painterResource(id = R.drawable.icon_view_count),
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             IconText(
@@ -300,7 +301,7 @@ fun BangumiInfoScreen(
                                     imageVector = Icons.Outlined.CheckCircle,
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             IconText(
@@ -314,7 +315,7 @@ fun BangumiInfoScreen(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .scale(scaleX = -1f, scaleY = 1f),
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             IconText(
@@ -326,7 +327,7 @@ fun BangumiInfoScreen(
                                     painter = painterResource(id = R.drawable.icon_danmaku),
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -518,7 +519,7 @@ fun BangumiInfoScreen(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Outlined.PlayCircle,
-                                            tint = Color.White,
+                                            tint = MaterialTheme.colorScheme.onSurface,
                                             contentDescription = "播放按钮"
                                         )
                                         androidx.compose.material.Text(
@@ -562,7 +563,7 @@ fun BangumiInfoScreen(
                                 icon = {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Outlined.SendToMobile,
-                                        tint = Color.White,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         contentDescription = "在手机上播放按钮",
                                         modifier = Modifier.align(Alignment.Center)
                                     )
@@ -605,7 +606,7 @@ fun BangumiInfoScreen(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Outlined.History,
-                                            tint = Color.White,
+                                            tint = MaterialTheme.colorScheme.onSurface,
                                             contentDescription = "稍后再看按钮"
                                         )
                                     }
@@ -618,7 +619,7 @@ fun BangumiInfoScreen(
                                 icon = {
                                     Icon(
                                         imageVector = Icons.Outlined.FileDownload,
-                                        tint = Color.White,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         contentDescription = null,
                                         modifier = Modifier.align(Alignment.Center)
                                     )

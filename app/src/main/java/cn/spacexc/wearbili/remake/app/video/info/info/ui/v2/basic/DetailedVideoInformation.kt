@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -72,7 +73,7 @@ fun DetailedVideoInformation(
                         fontFamily = wearbiliFontFamily,
                         fontSize = 12.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = with(sharedTransitionScope) {
                         Modifier
@@ -98,7 +99,7 @@ fun DetailedVideoInformation(
                             painter = painterResource(id = R.drawable.icon_view_count),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -112,7 +113,7 @@ fun DetailedVideoInformation(
                             imageVector = Icons.Outlined.Timer,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -125,7 +126,7 @@ fun DetailedVideoInformation(
                             painter = painterResource(id = R.drawable.icon_danmaku),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -143,7 +144,7 @@ fun DetailedVideoInformation(
                             imageVector = Icons.Outlined.Movie,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -162,7 +163,7 @@ fun DetailedVideoInformation(
                     text = video.desc,
                     fontFamily = wearbiliFontFamily,
                     fontSize = 12.sp,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(
                         start = titleBackgroundHorizontalPadding(),
                         end = titleBackgroundHorizontalPadding(),

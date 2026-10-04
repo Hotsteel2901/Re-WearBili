@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -168,7 +169,7 @@ fun VideoFavouriteFoldersScreen(
                                     text = folder.title,
                                     fontSize = 13.sp,
                                     fontFamily = wearbiliFontFamily,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -207,7 +208,7 @@ fun VideoFavouriteFoldersScreen(
                         text = "确定",
                         fontSize = 13.sp,
                         fontFamily = wearbiliFontFamily,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )

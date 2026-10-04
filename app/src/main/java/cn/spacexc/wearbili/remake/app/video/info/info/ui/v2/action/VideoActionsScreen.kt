@@ -30,6 +30,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -286,14 +287,14 @@ fun VideoActionsScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_group_outlined),
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.width(4.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(textHeight * 0.9f)
                             )
                         }
@@ -524,7 +525,7 @@ fun VideoActionsScreen(
                                         Alignment.Center
                                     )
                                     .size(24.dp),
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         },
                         shape = RoundedCornerShape(40),
