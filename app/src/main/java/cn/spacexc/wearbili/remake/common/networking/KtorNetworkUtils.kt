@@ -173,23 +173,26 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
      *  - 自动注入 appkey / ts / sign（见 [cn.spacexc.wearbili.remake.app.login.BiliAppSigner]）
      *  - 走公共请求头（env / app-key / x-bili-aurora-zone）
      *
-     * 使用 Ktor 的 Parameters 构建器而不是手工拼字符串，避免参数值含
-     * `+` `/` `=` 等字符时被错误编码（RSA 加密后的密码就是 base64，必须正确编码）。
+     * BUG FIX: 之前用 `setBody(Parameters.build { ... })`——Ktor client 的 setBody
+     * 没有 Parameters 重载，Parameters 会被丢给 ContentNegotiation 按 gson 序列化，
+     * 产生无效/空 body，B 站收到后返回 400，三个登录接口全部失败。
+     * 现改用 `submitForm`（与 [post] 一致的项目内已验证姿势）。
      */
     suspend inline fun <reified T> postFormWithAppSign(
         url: String,
         params: Map<String, String?>,
-        builder: HttpRequestBuilder.() -> Unit = {}
+        // crossinline：builder 会被传入 submitForm 的非 inline lambda 中调用，
+        // Kotlin 要求 crossinline 以禁止调用方的非局部 return
+        crossinline builder: HttpRequestBuilder.() -> Unit = {}
     ): NetworkResponse<T> {
         return try {
             val signed = cn.spacexc.wearbili.remake.app.login.BiliAppSigner.sign(params)
-            val response = client.post(url) {
-                setBody(
-                    Parameters.build {
-                        signed.forEach { (key, value) -> append(key, value) }
-                    }
-                )
-                contentType(ContentType.Application.FormUrlEncoded)
+            val response = client.submitForm(
+                url = url,
+                formParameters = Parameters.build {
+                    signed.forEach { (key, value) -> append(key, value) }
+                }
+            ) {
                 userAgent(cn.spacexc.wearbili.remake.app.login.BiliAppSigner.USER_AGENT)
                 cn.spacexc.wearbili.remake.app.login.BiliAppSigner.BASE_HEADERS.forEach {
                     header(it.key, it.value)
@@ -211,6 +214,7 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
                 )
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             NetworkResponse.Failed(
                 code = -1,
                 message = e.message ?: "Unknown error",

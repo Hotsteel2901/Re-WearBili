@@ -386,6 +386,14 @@ class LoginViewModel @Inject constructor(
         message: String?,
         data: LoginResultData?
     ) {
+        if (code == null) {
+            // NetworkResponse.Failed（HTTP 非 200 / 网络异常）——请求根本没到达业务层
+            state = state.copy(
+                uiState = LoginUiState.Failed,
+                message = "网络请求失败，请检查网络后重试"
+            )
+            return
+        }
         if (code != 0) {
             val hint = when (code) {
                 -629 -> "账号或密码错误"
