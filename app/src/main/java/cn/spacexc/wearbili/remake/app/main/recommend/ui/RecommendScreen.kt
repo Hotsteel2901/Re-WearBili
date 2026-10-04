@@ -83,6 +83,7 @@ import cn.spacexc.wearbili.remake.common.ui.LoadingTip
 import cn.spacexc.wearbili.remake.common.ui.VideoCard
 import cn.spacexc.wearbili.remake.common.ui.isRound
 import cn.spacexc.wearbili.remake.common.ui.lazyRotateInput
+import cn.spacexc.wearbili.remake.common.ui.theme.LocalLayoutSpec
 import cn.spacexc.wearbili.remake.common.ui.titleBackgroundHorizontalPadding
 import cn.spacexc.wearbili.remake.common.ui.wearBiliAnimateContentPlacement
 import cn.spacexc.wearbili.remake.proto.settings.AppConfiguration
@@ -132,6 +133,8 @@ fun RecommendScreen(
     val browsing = configuration.browsing
     val hideAds = browsing.hideAds
     val compactMode = browsing.compactMode
+    // 设备布局：手机端双列网格，手表端保持单列大卡
+    val isPhoneLayout = LocalLayoutSpec.current.isPhone
     // 长按菜单目标（videoIdType to videoId），非 null 时弹出快捷菜单
     var longPressTarget by remember { mutableStateOf<Pair<String, String>?>(null) }
     val scope = rememberCoroutineScope()
@@ -180,11 +183,59 @@ fun RecommendScreen(
             when (configuration.recommendSource) {
                 null -> {}
                 RecommendSource.App -> {
-                    (state.videoList as List<Item>)
+                    val appItems = (state.videoList as List<Item>)
                         // 过滤推广：只保留真实稿件（goto == "av"）；
                         // 开启 hideAds 时进一步剔除标题明显带推广标记的项
                         .filter { if (hideAds) !it.isPromotedContent() else true }
-                        .forEach { video ->
+                    if (isPhoneLayout) {
+                        // 手机布局：双列网格——两个视频合并为一个行 item（Row + weight），
+                        // 保持 LazyListState 类型不变，lazyRotateInput / QuickToolBar 依赖零改动
+                        appItems
+                            .filter { it.goto == "av" }
+                            .filter {
+                                (it.bvid?.takeIf(String::isNotBlank)
+                                    ?: it.param?.takeIf(String::isNotBlank)) != null
+                            }
+                            .chunked(2)
+                            .forEach { chunk ->
+                                try {
+                                    item(key = "app-row-" + chunk.joinToString("-") { v ->
+                                        v.bvid ?: v.param ?: "unknown"
+                                    }) {
+                                        val itemScope = this
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            chunk.forEach { video ->
+                                                val videoId = video.bvid?.takeIf(String::isNotBlank)
+                                                    ?: video.param.orEmpty()
+                                                VideoCard(
+                                                    videoName = video.title.orEmpty(),
+                                                    uploader = video.args?.up_name.orEmpty(),
+                                                    views = video.cover_left_text_2.orEmpty(),
+                                                    coverUrl = video.cover.orEmpty(),
+                                                    navController = navController,
+                                                    videoIdType = if (video.bvid.isNullOrBlank()) VIDEO_TYPE_AID else VIDEO_TYPE_BVID,
+                                                    videoId = videoId,
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .wearBiliAnimateContentPlacement(itemScope),
+                                                    isLarge = isLargeCard,
+                                                    onLongClick = if (browsing.longPressMenu) {
+                                                        { longPressTarget = VIDEO_TYPE_BVID to videoId }
+                                                    } else null
+                                                )
+                                            }
+                                            if (chunk.size == 1) Spacer(modifier = Modifier.weight(1f))
+                                        }
+                                    }
+                                } catch (e: IllegalArgumentException) {
+                                    e.printStackTrace()
+                                }
+                            }
+                    } else {
+                        appItems.forEach { video ->
                         val videoId = video.bvid?.takeIf(String::isNotBlank)
                             ?: video.param?.takeIf(String::isNotBlank)
                         if (video.goto == "av" && !videoId.isNullOrBlank()) {
@@ -210,12 +261,53 @@ fun RecommendScreen(
                             }
                         }
                     }
+                    }
                 }
 
                 RecommendSource.Web -> {
-                    (state.videoList as List<cn.spacexc.wearbili.remake.app.main.recommend.domain.remote.rcmd.web.Item>/* 这里真的没事的（确信 */)
+                    val webItems = (state.videoList as List<cn.spacexc.wearbili.remake.app.main.recommend.domain.remote.rcmd.web.Item>/* 这里真的没事的（确信 */)
                         .filter { if (hideAds) !it.isPromotedContent() else true }
-                        .forEach {
+                    if (isPhoneLayout) {
+                        // 手机布局：双列网格（同 App 源的分块策略）
+                        webItems
+                            .filter { it.goto == "av" && it.bvid.isNotBlank() }
+                            .chunked(2)
+                            .forEach { chunk ->
+                                try {
+                                    item(key = "web-row-" + chunk.joinToString("-") { it.bvid }) {
+                                        val itemScope = this
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            chunk.forEach { video ->
+                                                VideoCard(
+                                                    videoName = video.title,
+                                                    uploader = video.owner?.name ?: "",
+                                                    views = video.stat?.view?.toShortChinese()
+                                                        ?: "",
+                                                    coverUrl = video.pic,
+                                                    navController = navController,
+                                                    videoId = video.bvid,
+                                                    videoIdType = VIDEO_TYPE_BVID,
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .wearBiliAnimateContentPlacement(itemScope),
+                                                    isLarge = isLargeCard,
+                                                    onLongClick = if (browsing.longPressMenu) {
+                                                        { longPressTarget = VIDEO_TYPE_BVID to video.bvid }
+                                                    } else null
+                                                )
+                                            }
+                                            if (chunk.size == 1) Spacer(modifier = Modifier.weight(1f))
+                                        }
+                                    }
+                                } catch (e: IllegalArgumentException) {
+                                    e.printStackTrace()
+                                }
+                            }
+                    } else {
+                        webItems.forEach {
                         if (it.goto == "av") {
                             try {
                                 item(key = it.bvid) {
@@ -239,6 +331,7 @@ fun RecommendScreen(
                                 e.printStackTrace()
                             }
                         }
+                    }
                     }
                 }
 

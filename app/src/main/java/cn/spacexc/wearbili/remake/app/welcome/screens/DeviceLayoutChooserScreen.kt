@@ -32,7 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import cn.spacexc.bilibilisdk.utils.UserUtils
 import cn.spacexc.wearbili.remake.R
+import cn.spacexc.wearbili.remake.app.login.LoginScreen
 import cn.spacexc.wearbili.remake.app.main.ui.HomeScreen
 import cn.spacexc.wearbili.remake.app.settings.SettingsManager
 import cn.spacexc.wearbili.remake.common.ui.icon.Phone
@@ -126,8 +128,15 @@ fun DeviceLayoutChooserScreen(
                             }
                             copy { this.customization = updated }
                         }
-                        navController.navigate(HomeScreen(null)) {
-                            popUpTo(0)
+                        // 按登录状态分流：已登录直接进主页，未登录先去登录
+                        if (UserUtils.isUserLoggedIn()) {
+                            navController.navigate(HomeScreen(null)) {
+                                popUpTo(0)
+                            }
+                        } else {
+                            navController.navigate(LoginScreen) {
+                                popUpTo(0)
+                            }
                         }
                     }
                 },
