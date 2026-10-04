@@ -50,3 +50,16 @@ Java version: openjdk version "17.0.8.1" 2023-08-24
 
 - 这个项目使用GNU General Public License v3.0协议开源，详见[LICENSE.md](https://github.com/SpaceXC/Re-WearBili/blob/main/LICENSE)
 - 这个项目的UI设计使用Creative Common 4.0协议共享。将会在日后正式公开。
+
+## :memo:二改声明
+
+> 本项目是 [SpaceXC/Re-WearBili](https://github.com/SpaceXC/Re-WearBili) 的二次开发（二改）版本，**二改作者：hotsteel**（[GitHub @HotSteel2901](https://github.com/HotSteel2901)）。
+
+- **二改仓库**：[HotSteel2901/Re-WearBili](https://github.com/HotSteel2901/Re-WearBili)
+- **主要改动**：
+  - Material Design 3 Expressive 全面改版（含亮色主题修复）
+  - 双端 UI 布局体系（手表端 / 手机端，首启可选、设置可切换）
+  - 多渠道登录（扫码 / Cookie / 密码 / 短信）
+  - 播放与浏览增强（续播 / 连播 / 倍速 / 跳过片头片尾 / 后台音频 / 广告过滤 / 长按菜单）
+  - Haze 液态玻璃、Monet 动态取色与全套自绘图标
+- 感谢原作者 [XC-Qan](https://github.com/SpaceXC) 与所有原项目贡献者。原项目版权归原作者所有，本二改版本遵循原项目 GPL-3.0 协议继续开源。

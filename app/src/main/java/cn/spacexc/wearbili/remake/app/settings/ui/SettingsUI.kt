@@ -156,6 +156,14 @@ fun SettingsScreen(
                         fontSize = 9.sp,
                         modifier = Modifier.alpha(0.7f)
                     )
+                    Text(
+                        text = "二改版 · 二改作者 hotsteel（@HotSteel2901）",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = wearbiliFontFamily,
+                        fontSize = 9.sp,
+                        modifier = Modifier.alpha(0.9f)
+                    )
                 }
             }
 

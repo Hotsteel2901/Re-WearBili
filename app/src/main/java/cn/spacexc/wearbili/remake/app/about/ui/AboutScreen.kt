@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -130,7 +131,7 @@ fun Activity.AboutScreen(
                     Text(
                         text = "关于",
                         fontSize = 22.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -178,7 +179,7 @@ fun Activity.AboutScreen(
                     Text(
                         text = "TH1S R3:W3AR B1L! HAS SUP3R C0W P0W3R",
                         fontSize = 7.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -194,7 +195,7 @@ fun Activity.AboutScreen(
                     Text(
                         text = "Happy 10.24",
                         fontSize = 11.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -202,6 +203,28 @@ fun Activity.AboutScreen(
                             .padding(16.dp)
                             .copyable("10241024"),
                         textAlign = TextAlign.Center
+                    )
+                }
+                item {
+                    Text(
+                        text = "二改声明",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                item {
+                    Text(
+                        text = "本项目（uwu 版）是基于 SpaceXC/Re-WearBili 的二次开发版本。\n\n二改作者：hotsteel（GitHub @HotSteel2901）\n\n感谢原作者 XC-Qan 与所有贡献者。原项目版权归原作者所有，本二改版本遵循原项目开源协议继续开源。",
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Normal,
+                        lineHeight = 15.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(0.9f),
+                        style = AppTheme.typography.body1
                     )
                 }
             }
