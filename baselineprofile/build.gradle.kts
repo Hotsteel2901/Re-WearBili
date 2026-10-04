@@ -12,10 +12,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     defaultConfig {
         minSdk = 28
         targetSdk = 36
@@ -25,6 +21,12 @@ android {
 
     targetProjectPath = ":app"
 
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 // This is the configuration block for the Baseline Profile plugin.

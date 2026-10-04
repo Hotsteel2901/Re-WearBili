@@ -1,7 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    alias(libs.plugins.org.jetbrains.kotlin.jvm)
+    // AGP 9 已将 Kotlin 插件置于 classpath，此处不能再声明版本号
+    id("org.jetbrains.kotlin.jvm")
     alias(libs.plugins.org.jetbrains.kotlin.atomicfu)
 
 }

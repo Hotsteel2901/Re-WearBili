@@ -31,8 +31,11 @@ android {
         }
     }
 
-    kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.get()
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 

@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.google.devtools.ksp)
-    kotlin("kapt")
     id("kotlin-parcelize")
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.kotlin.serialization)
@@ -50,10 +49,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.get()
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
@@ -69,12 +64,16 @@ android {
         }
     }
 
-
-    applicationVariants.all {
-        outputs.all {
-            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output.outputFileName =
-                "Re-WearBili - $versionName Ver.$releaseNumber Rel.$versionCode.apk"
+    // AGP 9: 使用 variant API 自定义 APK 输出文件名
+    androidComponents {
+        onVariants { variant ->
+            val vName = variant.outputs.firstOrNull()?.versionName?.orNull ?: "unknown"
+            val vCode = variant.outputs.firstOrNull()?.versionCode?.orNull ?: 0
+            variant.outputs.forEach { output ->
+                (output as? com.android.build.api.variant.impl.VariantOutputImpl)?.outputFileName?.set(
+                    "Re-WearBili - $vName Ver.$releaseNumber Rel.$vCode.apk"
+                )
+            }
         }
     }
 
@@ -103,10 +102,6 @@ kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
-}
-
-kapt {
-    correctErrorTypes = true
 }
 
 dependencies {
@@ -142,8 +137,8 @@ dependencies {
     implementation(libs.hilt.work)
     implementation(libs.androidx.profileinstaller)
     "baselineProfile"(project(":baselineprofile"))
-    kapt(libs.hilt.compiler)
-    kapt(libs.hilt.work.compiler)
+    ksp(libs.hilt.compiler)
+    ksp(libs.hilt.work.compiler)
     implementation(libs.hilt.navigation.compose)
 
 

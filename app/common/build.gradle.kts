@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.google.protobuf)
-    kotlin("kapt")
+    alias(libs.plugins.google.devtools.ksp)
 }
 
 android {
@@ -29,10 +29,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = libs.versions.jvm.target.get()
-    }
 
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 dependencies {
@@ -66,5 +69,5 @@ dependencies {
 
     implementation(libs.zxing.core)
 
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 }
