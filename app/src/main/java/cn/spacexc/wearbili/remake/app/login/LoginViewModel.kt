@@ -75,6 +75,12 @@ class LoginViewModel @Inject constructor(
     /** 短信登录时暂存的 captcha_key（来自发送验证码的响应） */
     private var smsCaptchaKey: String = ""
 
+    /**
+     * TV 端短信登录会话标识。
+     * 发送验证码与提交验证码两步必须使用同一值，首次发码时生成。
+     */
+    private var smsLoginSessionId: String? = null
+
     /** 设备指纹，首次生成后持久化，保证 App 端接口的 device_id 稳定 */
     private var cachedDeviceId: String? = null
 
@@ -166,25 +172,24 @@ class LoginViewModel @Inject constructor(
                 delay(1500)
                 continue
             }
-            if (result.code != 0) {
-                state = state.copy(
-                    uiState = LoginUiState.Failed,
-                    message = result.message ?: "登录失败 (${result.code})"
-                )
-                return
-            }
-            val data = result.data
-            when (data?.code) {
+            // BUG FIX: TV 端 poll 的状态码在外层 envelope——curl 实测未扫码时
+            // 直接返回 {"code":86039,"message":"二维码尚未确认","data":null}。
+            // 之前误把外层 code != 0 当作失败，导致拿到二维码 1 秒内就报
+            // "二维码尚未确认"并退出轮询。现取外层 code（data 为 null 时），
+            // 同时兼容 Web 风格（外层 0 + data.code 表状态）。
+            val statusCode = result.data?.code?.takeIf { it != 0L } ?: result.code.toLong()
+            when (statusCode) {
                 0L -> {
                     // 扫码成功，已确认
-                    val cookies = data.cookieInfo?.cookies.orEmpty()
+                    val data = result.data
+                    val cookies = data?.cookieInfo?.cookies.orEmpty()
                     if (cookies.isNotEmpty()) {
-                        persistLoginCookies(cookies, data.refreshToken)
+                        persistLoginCookies(cookies, data?.refreshToken)
                     } else {
                         // 没有 cookie_info 时回退：用返回的 url 里的参数构造
-                        val fallback = parseCookiesFromUrl(data.url)
+                        val fallback = parseCookiesFromUrl(data?.url)
                         if (fallback.isNotEmpty()) {
-                            persistLoginCookies(fallback, data.refreshToken)
+                            persistLoginCookies(fallback, data?.refreshToken)
                         } else {
                             state = state.copy(
                                 uiState = LoginUiState.Failed,
@@ -210,13 +215,13 @@ class LoginViewModel @Inject constructor(
                     )
                 }
 
-                86101L -> {
+                86039L, 86101L -> {
                     state = state.copy(
                         uiState = LoginUiState.AwaitingScan,
                         message = "请使用哔哩哔哩客户端扫码"
                     )
                 }
-                // 其他状态码保持等待
+                // 其他状态码保持等待，180s 倒计时兜底
                 else -> Unit
             }
             delay(1500)
@@ -317,21 +322,30 @@ class LoginViewModel @Inject constructor(
         if (state.smsCooldownSeconds > 0) return
         state = state.copy(uiState = LoginUiState.SendingCode, message = "正在发送验证码…")
         viewModelScope.launch {
-            val captchaKey = loginApi.getCaptchaKey()?.first.orEmpty()
+            val sessionId = smsLoginSessionId
+                ?: UUID.randomUUID().toString().replace("-", "").uppercase()
+                    .also { smsLoginSessionId = it }
             val result = loginApi.sendSmsCode(
                 tel = tel,
-                cid = captchaKey.ifBlank { "0" },
                 buvid = ensureBuvid(),
-                deviceId = ensureDeviceId()
+                loginSessionId = sessionId
             )
             if (result == null || result.code != 0) {
+                val hint = when (result?.code) {
+                    86005, 1002 -> "手机号格式不正确"
+                    86203 -> "短信发送次数已达上限，请稍后再试"
+                    -412 -> "请求被风控拦截，请稍后再试"
+                    else -> result?.message ?: "验证码发送失败，请稍后重试"
+                }
                 state = state.copy(
                     uiState = LoginUiState.Failed,
-                    message = result?.message ?: "验证码发送失败，可能需要人机验证"
+                    message = hint
                 )
                 return@launch
             }
-            smsCaptchaKey = result.data?.captchaKey.orEmpty()
+            // TV 端发送成功响应应携带 data.captcha_key；若缺失则以会话标识兜底，
+            // 登录失败（86205）时提示用户重新获取验证码
+            smsCaptchaKey = result.data?.captchaKey.orEmpty().ifBlank { sessionId }
             state = state.copy(
                 uiState = LoginUiState.CodeSent,
                 message = "验证码已发送",
@@ -361,13 +375,15 @@ class LoginViewModel @Inject constructor(
         stopAllJobs()
         state = state.copy(uiState = LoginUiState.Loading, message = "正在登录…")
         viewModelScope.launch {
+            val sessionId = smsLoginSessionId
+                ?: UUID.randomUUID().toString().replace("-", "").uppercase()
+                    .also { smsLoginSessionId = it }
             val result = loginApi.loginBySmsCode(
                 tel = tel,
                 code = code,
                 captchaKey = smsCaptchaKey,
-                cid = smsCaptchaKey,
                 buvid = ensureBuvid(),
-                deviceId = ensureDeviceId()
+                loginSessionId = sessionId
             )
             handleLoginEnvelope(result?.code, result?.message, result?.data)
         }
@@ -400,6 +416,9 @@ class LoginViewModel @Inject constructor(
                 -105 -> "该账号已开启二次验证，请使用其他方式登录"
                 -400 -> "请求参数错误"
                 -403 -> "账号被封禁或限制登录"
+                86205 -> "验证码错误或已失效，请重新获取"
+                86005 -> "手机号格式不正确"
+                86038 -> "二维码已过期，请刷新后重试"
                 else -> message ?: "登录失败 ($code)"
             }
             state = state.copy(uiState = LoginUiState.Failed, message = hint)
