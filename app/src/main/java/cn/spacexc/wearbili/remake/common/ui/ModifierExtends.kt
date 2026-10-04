@@ -83,9 +83,10 @@ fun Modifier.clickVfx(
             )
         } else {
             val isPressed by interactionSource.collectIsPressedAsState()
+            // Expressive 按压反馈：缩放幅度与回弹力度随动画档位分级
             val sizePercent by wearBiliAnimateFloatAsState(
-                targetValue = if (isPressed) 0.9f else 1f,
-                animationSpec = tween(durationMillis = 150)
+                targetValue = if (isPressed) pressedScale else 1f,
+                animationSpec = animationSpecExpressive()
             )
             scale(sizePercent).clickable(
                 indication = null, interactionSource = interactionSource, onClick = onClick
@@ -116,9 +117,10 @@ fun Modifier.clickVfx(
             }
         } else {
             val isPressed by interactionSource.collectIsPressedAsState()
+            // Expressive 按压反馈：缩放幅度与回弹力度随动画档位分级
             val sizePercent by wearBiliAnimateFloatAsState(
-                targetValue = if (isPressed) 0.9f else 1f,
-                animationSpec = tween(durationMillis = 150)
+                targetValue = if (isPressed) pressedScale else 1f,
+                animationSpec = animationSpecExpressive()
             )
             scale(sizePercent).pointerInput(Unit) {
                 detectTapGestures(

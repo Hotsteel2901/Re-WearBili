@@ -43,12 +43,20 @@ import cn.spacexc.wearbili.remake.R
 import cn.spacexc.wearbili.remake.app.Application
 import cn.spacexc.wearbili.remake.app.feedback.ui.issues.AllIssuesScreen
 import cn.spacexc.wearbili.remake.app.settings.experimantal.ExperimentalFunctionsScreen
+import cn.spacexc.wearbili.remake.app.settings.player.PlayerOptionsScreen
 import cn.spacexc.wearbili.remake.app.settings.personalization.PersonalizationScreen
 import cn.spacexc.wearbili.remake.app.settings.scaling.ScaleAdjustingScreen
 import cn.spacexc.wearbili.remake.app.settings.toolbar.ui.QuickToolbarCustomizationScreen
 import cn.spacexc.wearbili.remake.app.welcome.screens.ReWearBiliText
 import cn.spacexc.wearbili.remake.common.ui.Card
 import cn.spacexc.wearbili.remake.common.ui.TitleBackground
+import cn.spacexc.wearbili.remake.common.ui.icon.WearBiliIcons
+import cn.spacexc.wearbili.remake.common.ui.icon.Experimental
+import cn.spacexc.wearbili.remake.common.ui.icon.Feedback
+import cn.spacexc.wearbili.remake.common.ui.icon.Personalization
+import cn.spacexc.wearbili.remake.common.ui.icon.PlayerSettings
+import cn.spacexc.wearbili.remake.common.ui.icon.QuickAccess
+import cn.spacexc.wearbili.remake.common.ui.icon.Scale
 import cn.spacexc.wearbili.remake.common.ui.isRound
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import cn.spacexc.wearbili.remake.common.ui.titleBackgroundHorizontalPadding
@@ -158,22 +166,29 @@ fun SettingsScreen(
                 SettingsItemV2(
                     modifier = Modifier.weight(1f),
                     icon = {
-                        AutoSizedBiliTextIcon(icon = "EAF7", modifier = Modifier.align(Alignment.Center))
+                        Icon(
+                            imageVector = WearBiliIcons.PlayerSettings,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(1.5.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     },
                     name = "播放选项"
                 ) {
-
+                    navController.navigate(PlayerOptionsScreen)
                 }
                 SettingsItemV2(
                     modifier = Modifier.weight(1f),
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_interface_scaling_settings_item),
+                            imageVector = WearBiliIcons.Scale,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     },
                     name = "界面缩放"
@@ -184,12 +199,12 @@ fun SettingsScreen(
                     modifier = Modifier.weight(1f),
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_quick_toolbar_settings_item),
+                            imageVector = WearBiliIcons.QuickAccess,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     },
                     name = "快捷功能"
@@ -199,7 +214,14 @@ fun SettingsScreen(
                 SettingsItemV2(
                     modifier = Modifier.weight(1f),
                     icon = {
-                        AutoSizedBiliTextIcon(icon = "EADF", modifier = Modifier.align(Alignment.Center))
+                        Icon(
+                            imageVector = WearBiliIcons.Personalization,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(1.5.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     },
                     name = "个性化"
                 ) {
@@ -209,12 +231,12 @@ fun SettingsScreen(
                     modifier = Modifier.weight(1f),
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_experimental_function),
+                            imageVector = WearBiliIcons.Experimental,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     },
                     name = "实验功能"
@@ -225,12 +247,12 @@ fun SettingsScreen(
                     modifier = Modifier.weight(1f),
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_report),
+                            imageVector = WearBiliIcons.Feedback,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     },
                     name = "反馈中心"

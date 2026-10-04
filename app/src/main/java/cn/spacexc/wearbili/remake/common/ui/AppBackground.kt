@@ -47,6 +47,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -88,6 +89,11 @@ import cn.spacexc.wearbili.remake.common.ToastUtils.toastContent
 import cn.spacexc.wearbili.remake.common.UIState
 import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
 import cn.spacexc.wearbili.remake.proto.settings.Appearance
+import dev.chrisbanes.haze.rememberHazeState
+import cn.spacexc.wearbili.remake.common.ui.glass.GlassLevel
+import cn.spacexc.wearbili.remake.common.ui.glass.LocalHazeState
+import cn.spacexc.wearbili.remake.common.ui.glass.hazeSourceIfEnabled
+import cn.spacexc.wearbili.remake.common.ui.glass.wearBiliGlass
 import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.OledBlack
 import cn.spacexc.wearbili.remake.common.ui.theme.h2
@@ -164,10 +170,16 @@ fun CirclesBackground(
         val baseBackground =
             if (appearance == Appearance.PureBlack) OledBlack else scheme.background
 
+        // 液态玻璃：在根节点创建 HazeState 并向下提供，
+        // 背景内容作为采样源，标题栏等前景层通过 wearBiliGlass 取用。
+        val hazeState = rememberHazeState()
+
+        CompositionLocalProvider(LocalHazeState provides hazeState) {
         Box(
             modifier = modifier
                 .fillMaxSize()
                 .background(baseBackground)
+                .hazeSourceIfEnabled(hazeState)
         ) {
             if (appearance != Appearance.PureBlack) {
                 WearBiliAnimatedVisibility(
@@ -207,6 +219,7 @@ fun CirclesBackground(
                 onLongClick = { },
                 onRetry = onRetry
             )
+        }
         }
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -371,6 +384,12 @@ fun TitleBackground(
         onRetry = onRetry
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            // 标题栏玻璃层：让标题文字浮在模糊背景上，滚动内容从下方穿过
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wearBiliGlass(level = GlassLevel.Thin)
+            ) {
             Row(
                 modifier = Modifier
                     .alpha(titleAlpha)
@@ -568,6 +587,7 @@ fun TitleBackground(
                         )
                     )
                 }
+            }
             }
             Box(
                 modifier = Modifier
