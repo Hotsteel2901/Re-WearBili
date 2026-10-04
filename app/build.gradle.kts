@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlin.compose.compiler)
@@ -8,6 +10,33 @@ plugins {
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.kotlin.serialization)
 }
+
+/**
+ * Release 签名配置。
+ *
+ * 优先级：
+ *  1. 环境变量（CI/GitHub Actions）：KEYSTORE_PATH / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD
+ *  2. keystore/keystore.properties（本地开发，已 gitignore）
+ *  3. 都没有 → release 回落到 debug 签名（保证构建不中断，但产物不可发布）
+ */
+val keystorePropsFile = rootProject.file("keystore/keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) keystorePropsFile.inputStream().use { load(it) }
+}
+
+fun signingValue(envName: String, propName: String): String? =
+    System.getenv(envName)?.takeIf { it.isNotBlank() } ?: keystoreProps.getProperty(propName)
+
+val releaseStoreFile = signingValue("KEYSTORE_PATH", "storeFile")
+val releaseStorePassword = signingValue("KEYSTORE_PASSWORD", "storePassword")
+val releaseKeyAlias = signingValue("KEY_ALIAS", "keyAlias")
+val releaseKeyPassword = signingValue("KEY_PASSWORD", "keyPassword")
+
+val hasReleaseSigning = !releaseStoreFile.isNullOrBlank() &&
+        !releaseStorePassword.isNullOrBlank() &&
+        !releaseKeyAlias.isNullOrBlank() &&
+        !releaseKeyPassword.isNullOrBlank() &&
+        rootProject.file(releaseStoreFile).exists()
 
 android {
     namespace = "cn.spacexc.wearbili.remake"
@@ -29,6 +58,21 @@ android {
         }
 
     }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(releaseStoreFile!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
+            }
+        }
+    }
+
     buildTypes {
         release {
             buildConfigField("Integer", "releaseNumber", "$releaseNumber")
@@ -38,7 +82,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            // 有真实签名用真实签名，否则回落 debug（本地快速验证用）
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
         debug {
             buildConfigField("Integer", "releaseNumber", "$releaseNumber")
@@ -54,9 +103,6 @@ android {
         buildConfig = true
     }
 
-    /*composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }*/
     packaging {
         resources.excludes.apply {
             add("/META-INF/{AL2.0,LGPL2.1}")
@@ -157,27 +203,6 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-
-
-
-    /*// For media playback using ExoPlayer
-    implementation(libs.androidx.media3.exoplayer)
-    // For DASH playback support with ExoPlayer
-    implementation(libs.androidx.media3.exoplayer.dash)
-    // For exposing and controlling media sessions
-    implementation(libs.androidx.media3.session)
-    // For scheduling background operations using Jetpack Work's WorkManager with ExoPlayer
-    implementation(libs.androidx.media3.exoplayer.workmanager)
-    // Common functionality for media decoders
-    implementation(libs.androidx.media3.decoder)
-    // Common functionality for loading data
-    implementation(libs.androidx.media3.datasource)
-    // Common functionality used across multiple media libraries
-    implementation(libs.androidx.media3.common)*/
-    //implementation(libs.danmaku.flame.master)
-
-    //implementation(libs.crashx)
-
 
     // (Java only)
     implementation(libs.androidx.work.runtime)

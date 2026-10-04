@@ -11,3 +11,9 @@ local.properties
 /app/src/main/java/cn/spacexc/wearbili/remake/AppSecrets.kt
 /app/mapping.txt
 .kotlin/
+
+# 签名密钥库与凭据 —— 严禁提交
+/keystore/
+*.jks
+*.keystore
+keystore.properties
