@@ -13,13 +13,16 @@ import javax.inject.Singleton
 /**
  * 登录相关接口封装。
  *
- * 端点与参数完全对齐 PiliPlus 的 `lib/http/login.dart`：
- *  密码登录 : POST /x/passport-login/oauth2/login   (appSign)
- *  短信发送 : POST /x/passport-login/sms/send       (appSign)
- *  短信登录 : POST /x/passport-login/login/sms      (appSign)
+ * 端点与参数对齐 PiliPlus / 黑盒实测（2026-10）：
+ *  密码登录 : POST /x/passport-login/oauth2/login          (appSign, App 端)
+ *  短信发送 : POST /x/passport-tv-login/sms/send           (appSign, TV 端，无极验)
+ *  短信登录 : POST /x/passport-tv-login/login/sms          (appSign, TV 端，无极验)
  *  公钥获取 : GET  /x/passport-login/web/key
- *  扫码申请 : POST /x/passport-tv-login/qrcode/auth_code  (appSign, TV 端)
- *  扫码轮询 : POST /x/passport-tv-login/qrcode/poll       (appSign, TV 端)
+ *  扫码申请 : POST /x/passport-tv-login/qrcode/auth_code   (appSign, TV 端)
+ *  扫码轮询 : POST /x/passport-tv-login/qrcode/poll        (appSign, TV 端)
+ *
+ * 注：App 端短信接口 /x/passport-login/sms/send 强制极验（gee_validate
+ * 空/假值均被 -105 拒绝），手表端无法完成极验，故短信走 TV 端通道。
  */
 @Singleton
 class LoginApi @Inject constructor(
@@ -129,76 +132,62 @@ class LoginApi @Inject constructor(
     }
 
     /**
-     * 发送短信验证码（App 端）。
+     * 发送短信验证码（TV 端）。
      *
-     * @param cid 图形验证码的 captcha_key，需要先调 [getCaptchaKey] 获取
+     * 黑盒实测（2026-10）：App 端 `/x/passport-login/sms/send` 强制极验，
+     * 缺少/伪造 gee_validate 均被拒（-105），手表端无法完成极验交互；
+     * 而 TV 端 `/x/passport-tv-login/sms/send` 不需要极验，
+     * 只需 tel + cid(国际冠字码) + login_session_id + 基础设备参数（appSign 签名）。
+     *
+     * cid 固定 "86"（中国大陆区号）。
+     * [loginSessionId] 由调用方生成，发送与登录两步必须使用同一值。
      */
     suspend fun sendSmsCode(
         tel: String,
-        cid: String,
         buvid: String,
-        deviceId: String
+        loginSessionId: String
     ): SmsSendEnvelope? {
-        val timestamp = System.currentTimeMillis()
-        val loginSessionId = BiliAppSigner.md5(buvid + timestamp.toString())
         val response: NetworkResponse<SmsSendEnvelope> = networkUtils.postFormWithAppSign(
-            url = "$PASSPORT/x/passport-login/sms/send",
+            url = "$PASSPORT/x/passport-tv-login/sms/send",
             params = mapOf(
                 "build" to "2001100",
                 "buvid" to buvid,
-                "c_locale" to "zh_CN",
-                "channel" to "master",
-                "cid" to cid,
-                "disable_rcmd" to "0",
-                "local_id" to buvid,
+                "cid" to "86",
                 "login_session_id" to loginSessionId,
+                "local_id" to buvid,
                 "mobi_app" to "android_hd",
                 "platform" to "android",
-                "s_locale" to "zh_CN",
-                "statistics" to BiliAppSigner.STATISTICS,
-                "tel" to tel,
-                "ts" to (timestamp / 1000).toString()
+                "tel" to tel
             )
         )
         return response.data
     }
 
     /**
-     * 短信验证码登录（App 端）。
+     * 短信验证码登录（TV 端）。
      *
-     * @param captchaKey 来自 [sendSmsCode] 返回的 `captcha_key`
+     * @param captchaKey 来自 [sendSmsCode] 成功响应的 `data.captcha_key`
+     * @param loginSessionId 必须与 [sendSmsCode] 传同一值
      */
     suspend fun loginBySmsCode(
         tel: String,
         code: String,
         captchaKey: String,
-        cid: String,
         buvid: String,
-        deviceId: String
+        loginSessionId: String
     ): SmsLoginEnvelope? {
         val response: NetworkResponse<SmsLoginEnvelope> = networkUtils.postFormWithAppSign(
-            url = "$PASSPORT/x/passport-login/login/sms",
+            url = "$PASSPORT/x/passport-tv-login/login/sms",
             params = mapOf(
-                "bili_local_id" to deviceId,
                 "build" to "2001100",
                 "buvid" to buvid,
-                "c_locale" to "zh_CN",
                 "captcha_key" to captchaKey,
-                "channel" to "master",
-                "cid" to cid,
+                "cid" to "86",
                 "code" to code,
-                "device" to "phone",
-                "device_id" to deviceId,
-                "device_name" to "vivo",
-                "device_platform" to "Android14vivo",
-                "disable_rcmd" to "0",
-                "from_pv" to "main.my-information.my-login.0.click",
-                "from_url" to "bilibili://user_center/mine",
+                "login_session_id" to loginSessionId,
                 "local_id" to buvid,
                 "mobi_app" to "android_hd",
                 "platform" to "android",
-                "s_locale" to "zh_CN",
-                "statistics" to BiliAppSigner.STATISTICS,
                 "tel" to tel
             )
         )
