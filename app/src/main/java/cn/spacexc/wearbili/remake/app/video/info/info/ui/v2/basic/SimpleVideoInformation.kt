@@ -45,6 +45,7 @@ import cn.spacexc.wearbili.remake.app.player.audio.ui.AudioPlayerScreen
 import cn.spacexc.wearbili.remake.app.player.videoplayer.defaultplayer.IjkVideoPlayerScreen
 import cn.spacexc.wearbili.remake.app.player.videoplayer.defaultplayer.IjkVideoPlayerViewModel
 import cn.spacexc.wearbili.remake.app.player.videoplayer.defaultplayer.PlayerStats
+import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 import cn.spacexc.wearbili.remake.app.video.info.info.ui.VideoInformationViewModel
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
 import cn.spacexc.wearbili.remake.common.ui.BiliImage
@@ -154,6 +155,35 @@ fun SimpleVideoInformation(
                 minLines = 2
             )
             Spacer(modifier = Modifier.height(4.dp))
+            // 视频数据行：播放 / 弹幕 / 点赞 / 投币 / 收藏（设置里可关）
+            if (LocalConfiguration.current.browsing.showVideoStats) {
+                Text(
+                    text = buildString {
+                        append(formatCount(video.view.stat.view))
+                        append("播放 · ")
+                        append(formatCount(video.view.stat.danmaku))
+                        append("弹幕 · ")
+                        append(formatCount(video.view.stat.like))
+                        append("点赞 · ")
+                        append(formatCount(video.view.stat.coin))
+                        append("投币 · ")
+                        append(formatCount(video.view.stat.favorite))
+                        append("收藏")
+                    },
+                    style = TextStyle(
+                        fontFamily = wearbiliFontFamily,
+                        fontSize = 10.sp,
+                        color = Color.White.copy(alpha = 0.72f)
+                    ),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = titleBackgroundHorizontalPadding())
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
@@ -243,4 +273,21 @@ fun SimpleVideoInformation(
             }
         }
     }
+}
+/**
+ * 数字缩写：1234 -> 1.2万（B 站习惯是万以上保留一位小数）。
+ * 放在这里是因为它目前只服务视频数据行，等有第二个使用方再上移到 common。
+ */
+private fun formatCount(count: Int): String = when {
+    count >= 100_000_000 -> {
+        val v = count / 100_000_000.0
+        if (v >= 100) "${v.toInt()}亿" else String.format("%.1f亿", v)
+    }
+
+    count >= 10_000 -> {
+        val v = count / 10_000.0
+        if (v >= 100) "${v.toInt()}万" else String.format("%.1f万", v)
+    }
+
+    else -> count.toString()
 }

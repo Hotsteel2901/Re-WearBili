@@ -1,10 +1,12 @@
 package cn.spacexc.wearbili.remake.app.main.recommend.ui
 
+import kotlinx.coroutines.launch
 import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.body1
 import cn.spacexc.wearbili.remake.common.ui.theme.h1
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.TextButton
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -37,7 +43,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -64,7 +72,9 @@ import cn.spacexc.wearbili.remake.app.splash.remote.Version
 import cn.spacexc.wearbili.remake.app.update.ui.UpdateCard
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_AID
 import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
+import cn.spacexc.bilibilisdk.sdk.video.action.VideoAction
 import cn.spacexc.wearbili.remake.common.UIState
+import cn.spacexc.wearbili.remake.common.ToastUtils
 import cn.spacexc.wearbili.remake.common.ui.AutoResizedText
 import cn.spacexc.wearbili.remake.common.ui.BilibiliPink
 import cn.spacexc.wearbili.remake.common.ui.Card
@@ -122,6 +132,9 @@ fun RecommendScreen(
     val browsing = configuration.browsing
     val hideAds = browsing.hideAds
     val compactMode = browsing.compactMode
+    // 长按菜单目标（videoIdType to videoId），非 null 时弹出快捷菜单
+    var longPressTarget by remember { mutableStateOf<Pair<String, String>?>(null) }
+    val scope = rememberCoroutineScope()
     LoadableBox(
         uiState = state.uiState, modifier = Modifier
             .fillMaxSize()
@@ -186,7 +199,10 @@ fun RecommendScreen(
                                         videoIdType = if (video.bvid.isNullOrBlank()) VIDEO_TYPE_AID else VIDEO_TYPE_BVID,
                                         videoId = videoId,
                                         modifier = Modifier.wearBiliAnimateContentPlacement(this),
-                                        isLarge = isLargeCard
+                                        isLarge = isLargeCard,
+                                        onLongClick = if (browsing.longPressMenu) {
+                                            { longPressTarget = VIDEO_TYPE_BVID to videoId }
+                                        } else null
                                     )
                                 }
                             } catch (e: IllegalArgumentException) {
@@ -213,7 +229,10 @@ fun RecommendScreen(
                                         videoId = it.bvid,
                                         videoIdType = VIDEO_TYPE_BVID,
                                         modifier = Modifier.wearBiliAnimateContentPlacement(this),
-                                        isLarge = isLargeCard
+                                        isLarge = isLargeCard,
+                                        onLongClick = if (browsing.longPressMenu) {
+                                            { longPressTarget = VIDEO_TYPE_BVID to it.bvid }
+                                        } else null
                                     )
                                 }
                             } catch (e: IllegalArgumentException) {
@@ -246,6 +265,45 @@ fun RecommendScreen(
             modifier = Modifier.align(
                 Alignment.TopCenter
             ),
+        )
+    }
+
+    // 长按快捷菜单：稍后再看（不感兴趣需要 App 端风控接口，手表端降级为仅稍后再看）
+    longPressTarget?.let { (idType, videoId) ->
+        AlertDialog(
+            onDismissRequest = { longPressTarget = null },
+            title = {
+                Text(
+                    text = "快捷操作",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    ListItem(
+                        headlineContent = { Text("加入稍后再看", fontSize = 12.sp) },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable {
+                                scope.launch {
+                                    val response = VideoAction.addToWatchLater(idType, videoId)
+                                    ToastUtils.showText(
+                                        if (response.code == 0) "已加入稍后再看"
+                                        else "失败: ${response.message ?: response.code}"
+                                    )
+                                }
+                                longPressTarget = null
+                            }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { longPressTarget = null }) {
+                    Text("取消", fontSize = 12.sp)
+                }
+            },
+            shape = RoundedCornerShape(18.dp)
         )
     }
 }

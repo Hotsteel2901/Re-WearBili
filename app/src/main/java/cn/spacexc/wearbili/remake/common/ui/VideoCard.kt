@@ -91,13 +91,14 @@ fun VideoCard(
     videoId: String? = null,
     videoIdType: String? = null,
     navController: NavController,
-    isLarge: Boolean = false
+    isLarge: Boolean = false,
+    onLongClick: (() -> Unit)? = null
 ) {
     Card(modifier = modifier, onClick = {
         if (!videoId.isNullOrEmpty() && !videoIdType.isNullOrEmpty()) {
             navController.navigate(VideoInformationScreen(videoIdType, videoId))
         }
-    }) {
+    }, onLongClick = onLongClick) {
         VideoCardContent(
             videoName = videoName,
             uploader = uploader,
@@ -121,13 +122,27 @@ fun VideoCardWithNoBorder(
     videoId: String? = null,
     videoIdType: String? = null,
     navController: NavController,
-    isLarge: Boolean = false
+    isLarge: Boolean = false,
+    onLongClick: (() -> Unit)? = null
 ) {
     Box(modifier = modifier
         .padding(vertical = 2.dp)
-        .clickVfx {
-            if (!videoId.isNullOrEmpty() && !videoIdType.isNullOrEmpty()) {
-                navController.navigate(VideoInformationScreen(videoIdType, videoId))
+        .run {
+            if (onLongClick != null) {
+                clickVfx(
+                    onClick = {
+                        if (!videoId.isNullOrEmpty() && !videoIdType.isNullOrEmpty()) {
+                            navController.navigate(VideoInformationScreen(videoIdType, videoId))
+                        }
+                    },
+                    onLongClick = onLongClick
+                )
+            } else {
+                clickVfx {
+                    if (!videoId.isNullOrEmpty() && !videoIdType.isNullOrEmpty()) {
+                        navController.navigate(VideoInformationScreen(videoIdType, videoId))
+                    }
+                }
             }
         }) {
         VideoCardContent(
