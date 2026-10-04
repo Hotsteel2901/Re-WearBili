@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.google.dagger.hilt.android)

@@ -50,7 +50,7 @@ protobuf = "0.9.5"
 room = "2.6.1"
 buildTool = "36.0.0"
 
-agp = "8.7.3"
+agp = "9.4.1"
 
 kotlin = "2.3.10"
 workRuntime = "2.10.0"
@@ -159,7 +159,6 @@ org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kot
 org-jetbrains-kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
