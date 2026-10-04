@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -99,6 +103,7 @@ import cn.spacexc.wearbili.remake.common.ui.theme.ProvideLocalDensity
 import cn.spacexc.wearbili.remake.common.ui.theme.WearBiliTheme
 import cn.spacexc.wearbili.remake.common.ui.wearBiliAnimateDpAsState
 import cn.spacexc.wearbili.remake.common.ui.wearBiliAnimateFloatAsState
+import cn.spacexc.wearbili.remake.proto.settings.DeviceLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
@@ -116,6 +121,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProvideConfiguration {
                 WearBiliTheme {
+                    // 手机布局隐藏状态栏（沉浸式）：顶部工具条图标此前被系统状态栏
+                    // 遮挡而无法点击——手表设备无状态栏，此问题在手机布局下才暴露。
+                    // 按布局规格响应式切换：首启选择布局/后续切换布局时自动生效；
+                    // 状态栏可通过下拉临时呼出（transient 模式，不挤压布局）。
+                    val deviceLayout = LocalConfiguration.current.customization.deviceLayout
+                    val insetsView = LocalView.current
+                    DisposableEffect(deviceLayout) {
+                        val controller = WindowInsetsControllerCompat(window, insetsView)
+                        if (deviceLayout == DeviceLayout.DevicePhone) {
+                            controller.hide(WindowInsetsCompat.Type.statusBars())
+                            controller.systemBarsBehavior =
+                                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                        } else {
+                            controller.show(WindowInsetsCompat.Type.statusBars())
+                        }
+                        onDispose { }
+                    }
                     var screenSize by remember {
                         mutableStateOf(DpSize(1.dp, 1.dp))
                     }
