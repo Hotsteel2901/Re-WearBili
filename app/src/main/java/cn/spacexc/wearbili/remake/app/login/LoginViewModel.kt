@@ -435,9 +435,20 @@ class LoginViewModel @Inject constructor(
             )
             return
         }
-        val cookies = data.cookieInfo?.cookies.orEmpty()
+        // cookie_info 为空时回退：从返回 url 的 query 参数构造（与扫码 poll 同构）。
+        // TV 端为 OAuth2 token 体系：code=0 时也可能只回 token 不回 cookie，
+        // 此时把关键字段存在性透传给 UI，方便真机定位"到底缺了什么"。
+        val cookies = data.cookieInfo?.cookies.orEmpty().ifEmpty { parseCookiesFromUrl(data.url) }
         if (cookies.isEmpty()) {
-            state = state.copy(uiState = LoginUiState.Failed, message = "登录响应缺少凭证")
+            if (!data.refreshToken.isNullOrBlank()) {
+                // 先把 token 存档，后续接入 token 体系时可用
+                BilibiliSdkManager.dataManager.saveString("refreshToken", data.refreshToken)
+            }
+            val diag = "登录响应缺少凭证" +
+                    "(token=${if (!data.accessToken.isNullOrBlank()) "有" else "无"}" +
+                    ",refresh=${if (!data.refreshToken.isNullOrBlank()) "有" else "无"}" +
+                    ",url=${if (!data.url.isNullOrBlank()) "有" else "无"})"
+            state = state.copy(uiState = LoginUiState.Failed, message = diag)
             return
         }
         persistLoginCookies(cookies, data.refreshToken)

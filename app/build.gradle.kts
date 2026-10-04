@@ -50,7 +50,7 @@ android {
         applicationId = "cn.spacexc.wearbili.remake"
         minSdk = 25
         targetSdk = 36
-        versionCode = 49
+        versionCode = 50
         versionName = "HotSteel 炽热钢铁"
         vectorDrawables {
             useSupportLibrary = true
