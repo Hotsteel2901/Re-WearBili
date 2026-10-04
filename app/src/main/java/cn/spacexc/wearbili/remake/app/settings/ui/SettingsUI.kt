@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import cn.spacexc.wearbili.remake.R
 import cn.spacexc.wearbili.remake.app.Application
 import cn.spacexc.wearbili.remake.app.feedback.ui.issues.AllIssuesScreen
+import cn.spacexc.wearbili.remake.app.settings.enhance.EnhancementScreen
 import cn.spacexc.wearbili.remake.app.settings.experimantal.ExperimentalFunctionsScreen
 import cn.spacexc.wearbili.remake.app.settings.player.PlayerOptionsScreen
 import cn.spacexc.wearbili.remake.app.settings.personalization.PersonalizationScreen
@@ -57,6 +58,7 @@ import cn.spacexc.wearbili.remake.common.ui.icon.Personalization
 import cn.spacexc.wearbili.remake.common.ui.icon.PlayerSettings
 import cn.spacexc.wearbili.remake.common.ui.icon.QuickAccess
 import cn.spacexc.wearbili.remake.common.ui.icon.Scale
+import cn.spacexc.wearbili.remake.common.ui.icon.Settings
 import cn.spacexc.wearbili.remake.common.ui.isRound
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
 import cn.spacexc.wearbili.remake.common.ui.titleBackgroundHorizontalPadding
@@ -232,6 +234,22 @@ fun SettingsScreen(
                     icon = {
                         Icon(
                             imageVector = WearBiliIcons.Experimental,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(1.5.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    name = "增强功能"
+                ) {
+                    navController.navigate(EnhancementScreen)
+                }
+                SettingsItemV2(
+                    modifier = Modifier.weight(1f),
+                    icon = {
+                        Icon(
+                            imageVector = WearBiliIcons.Settings,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()

@@ -50,7 +50,6 @@ android {
         applicationId = "cn.spacexc.wearbili.remake"
         minSdk = 25
         targetSdk = 36
-        compileSdk = 36
         versionCode = 47
         versionName = "Atlas 阿特拉斯"
         vectorDrawables {

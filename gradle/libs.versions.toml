@@ -46,7 +46,7 @@ pagingCompose = "3.3.6"
 paletteKtx = "1.0.0"
 
 
-compileSdk = "36"
+compileSdk = "37"
 minSdk = "25"
 targetSdk = "36"
 jvm-target = "17"

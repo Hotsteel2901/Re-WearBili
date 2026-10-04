@@ -106,4 +106,35 @@ message AppConfiguration {
   string activatedExperimentFunctions = 12;
   VideoDisplaySurface videoDisplaySurface = 13;
   Customization customization = 14;
+
+  // ---- 2026 改版新增功能开关 ----
+  PlaybackEnhancement playback = 15;   // 播放增强（后台播放/自动连播/记忆进度等）
+  BrowsingExperience browsing = 16;    // 浏览体验（大屏适配/过滤/密度）
+}
+
+/**
+ * 播放增强配置。
+ *
+ * 这些开关都有对应的真实消费点，开启后行为立即改变。
+ */
+message PlaybackEnhancement {
+  bool rememberProgress = 1;        // 记忆播放进度，下次自动续播
+  bool autoPlayNext = 2;            // 播完自动连播（分P / 推荐）
+  bool backgroundAudio = 3;         // 退到后台继续播放音频
+  bool skipOpening = 4;             // 自动跳过片头片尾（按视频时长比例）
+  float playbackSpeed = 5;          // 默认倍速（1.0 为正常）
+  int32 skipOpeningSeconds = 6;     // 片头跳过秒数
+  int32 skipEndingSeconds = 7;      // 片尾跳过秒数
+}
+
+/**
+ * 浏览体验配置。
+ */
+message BrowsingExperience {
+  bool hideAds = 1;                 // 过滤推广卡片
+  bool hideLowQualityCover = 2;     // 隐藏低画质封面（用模糊占位替代表情包封面）
+  bool showVideoStats = 3;          // 卡片上显示播放量/弹幕数
+  bool longPressMenu = 4;           // 长按卡片弹出快捷菜单
+  bool compactMode = 5;             // 紧凑布局（一屏显示更多内容）
+  bool autoRotate = 6;              // 允许屏幕自动旋转
 }

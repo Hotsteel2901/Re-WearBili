@@ -76,6 +76,7 @@ import cn.spacexc.wearbili.remake.app.search.ui.SearchScreen
 import cn.spacexc.wearbili.remake.app.season.ui.SeasonScreen
 import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 import cn.spacexc.wearbili.remake.app.settings.ProvideConfiguration
+import cn.spacexc.wearbili.remake.app.settings.enhance.EnhancementScreen
 import cn.spacexc.wearbili.remake.app.settings.experimantal.ExperimentalFunctionsScreen
 import cn.spacexc.wearbili.remake.app.settings.personalization.PersonalizationScreen
 import cn.spacexc.wearbili.remake.app.settings.player.PlayerOptionsScreen
@@ -323,6 +324,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable<PlayerOptionsScreen> {
                                         PlayerOptionsScreen(navController = navController)
+                                    }
+                                    composable<EnhancementScreen> {
+                                        EnhancementScreen(navController = navController)
                                     }
                                     composable<DeviceDiscoverScreen> {
                                         DeviceDiscoverScreen(navController = navController)

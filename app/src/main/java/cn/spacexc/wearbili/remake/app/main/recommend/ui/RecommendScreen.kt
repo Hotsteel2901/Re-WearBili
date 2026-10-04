@@ -118,6 +118,10 @@ fun RecommendScreen(
                 .contains(EXPERIMENTAL_LARGE_VIDEO_CARD)
         }
     }
+    // 浏览体验配置（增强功能）：过滤推广内容 / 紧凑布局
+    val browsing = configuration.browsing
+    val hideAds = browsing.hideAds
+    val compactMode = browsing.compactMode
     LoadableBox(
         uiState = state.uiState, modifier = Modifier
             .fillMaxSize()
@@ -136,7 +140,9 @@ fun RecommendScreen(
                 bottom = 6.dp,
                 top = if (isRound()) 8.dp else 0.dp
             ),
-            state = state.scrollState
+            state = state.scrollState,
+            // 紧凑布局：负间距收紧卡片，让一屏容纳更多内容
+            verticalArrangement = Arrangement.spacedBy(if (compactMode) (-4).dp else 0.dp)
         ) {
             //if (configuration.toolBarConfiguration.slotCount != QuickToolBarSlotCount.Zero) {
             item(key = "quickToolBar") {
@@ -161,7 +167,11 @@ fun RecommendScreen(
             when (configuration.recommendSource) {
                 null -> {}
                 RecommendSource.App -> {
-                    (state.videoList as List<Item>).forEach { video ->
+                    (state.videoList as List<Item>)
+                        // 过滤推广：只保留真实稿件（goto == "av"）；
+                        // 开启 hideAds 时进一步剔除标题明显带推广标记的项
+                        .filter { if (hideAds) !it.isPromotedContent() else true }
+                        .forEach { video ->
                         val videoId = video.bvid?.takeIf(String::isNotBlank)
                             ?: video.param?.takeIf(String::isNotBlank)
                         if (video.goto == "av" && !videoId.isNullOrBlank()) {
@@ -187,7 +197,9 @@ fun RecommendScreen(
                 }
 
                 RecommendSource.Web -> {
-                    (state.videoList as List<cn.spacexc.wearbili.remake.app.main.recommend.domain.remote.rcmd.web.Item>/* 这里真的没事的（确信 */).forEach {
+                    (state.videoList as List<cn.spacexc.wearbili.remake.app.main.recommend.domain.remote.rcmd.web.Item>/* 这里真的没事的（确信 */)
+                        .filter { if (hideAds) !it.isPromotedContent() else true }
+                        .forEach {
                         if (it.goto == "av") {
                             try {
                                 item(key = it.bvid) {

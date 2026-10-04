@@ -171,11 +171,12 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
         builder: HttpRequestBuilder.() -> Unit = {}
     ): NetworkResponse<T> {
         return try {
-            val storedKey = BilibiliSdkManager.dataManager
+            val manager = BilibiliSdkManager.dataManager
+            val storedKey = manager
                 .getString("webi_signature_key", null)
                 ?.takeIf { it.length >= 32 }
             val mixinKey = storedKey
-                ?: WebiSignature.getWebiSignature().data?.take(32)
+                ?: fetchAndCacheWbiKey(manager)
                 ?: return NetworkResponse.Failed(
                     code = -1,
                     message = "Unable to load the Bilibili WBI signing key",
@@ -188,7 +189,8 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
             )
             // The key can rotate while the app is open. Refresh it once on signature errors.
             if (response.code == -352) {
-                val refreshedKey = WebiSignature.getWebiSignature().data?.take(32)
+                manager.deleteString("webi_signature_key")
+                val refreshedKey = fetchAndCacheWbiKey(manager)
                 if (!refreshedKey.isNullOrBlank() && refreshedKey != mixinKey) {
                     response = get(
                         BiliWbiSigner.buildSignedUrl(endpoint, parameters, refreshedKey),
@@ -204,6 +206,38 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
                 apiUrl = endpoint
             )
         }
+    }
+
+    /**
+     * 拉取 WBI mixin key 并写入本地缓存。
+     *
+     * 原实现只读不写：每次签名请求都要重新访问 userInfo 接口拿密钥，
+     * 造成每个 WBI 请求都多一次网络往返。这里补上写回。
+     *
+     * 缓存策略参考 PiliPlus：全量密钥按天刷新，
+     * 因此同时记录获取日期，跨天后自动重新拉取。
+     *
+     * 注：`getWithWbiSignature` 是 public inline，内联体无法访问非 public API，
+     * 故此处用 @PublishedApi + internal（Kotlin 官方为内联场景提供的逃逸口）。
+     */
+    @PublishedApi
+    internal suspend fun fetchAndCacheWbiKey(
+        manager: cn.spacexc.bilibilisdk.data.DataManager
+    ): String? {
+        val fullKey = WebiSignature.getWebiSignature().data ?: return null
+        if (fullKey.length < 32) return null
+
+        manager.saveString("webi_signature_key", fullKey)
+        manager.saveInt("webi_signature_key_day", currentDayStamp())
+        return fullKey.take(32)
+    }
+
+    /** 当天的日期戳（用于按天失效判断） */
+    @PublishedApi
+    internal fun currentDayStamp(): Int {
+        val calendar = java.util.Calendar.getInstance()
+        return calendar.get(java.util.Calendar.YEAR) * 1000 +
+                calendar.get(java.util.Calendar.DAY_OF_YEAR)
     }
 
     suspend fun getRedirectUrl(url: String): String? {
