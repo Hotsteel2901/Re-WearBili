@@ -476,7 +476,8 @@ fun TitleBackground(
                                     Icon(
                                         imageVector = Icons.Default.KeyboardArrowDown,
                                         contentDescription = null,
-                                        tint = Color.White,
+                                        // 主题化：跟随 onSurface，修复亮色模式下箭头不可见
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .rotate(dropdownIconRotation)
@@ -505,7 +506,8 @@ fun TitleBackground(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Default.ArrowBackIos,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    // 主题化：跟随 onSurface，与标题文字（AppTheme.typography.h2）颜色保持一致
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }),
@@ -730,7 +732,8 @@ fun ArrowTitleBackgroundWithCustomBackground(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Default.ArrowBackIos,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    // 主题化：跟随 onSurface，与标题文字（AppTheme.typography.h2）颜色保持一致
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }),
