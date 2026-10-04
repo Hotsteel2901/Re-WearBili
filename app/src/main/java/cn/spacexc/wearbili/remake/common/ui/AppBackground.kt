@@ -45,6 +45,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -86,13 +87,14 @@ import cn.spacexc.wearbili.remake.common.ToastUtils.snackBarObject
 import cn.spacexc.wearbili.remake.common.ToastUtils.toastContent
 import cn.spacexc.wearbili.remake.common.UIState
 import cn.spacexc.wearbili.remake.common.networking.KtorNetworkUtils
+import cn.spacexc.wearbili.remake.proto.settings.Appearance
 import cn.spacexc.wearbili.remake.common.ui.theme.AppTheme
+import cn.spacexc.wearbili.remake.common.ui.theme.OledBlack
+import cn.spacexc.wearbili.remake.common.ui.theme.h2
 import cn.spacexc.wearbili.remake.common.ui.theme.WearBiliTheme
 import cn.spacexc.wearbili.remake.common.ui.theme.time.DefaultTimeSource
 import cn.spacexc.wearbili.remake.common.ui.theme.wearbiliFontFamily
-import cn.spacexc.wearbili.remake.proto.settings.Theme
 import kotlinx.coroutines.delay
-import cn.spacexc.wearbili.remake.common.ui.theme.h2
 
 /**
  * Created by XC-Qan on 2023/3/21.
@@ -125,10 +127,10 @@ fun CirclesBackground(
     WearBiliTheme {
         val localDensity = LocalDensity.current
         val configuration = LocalConfiguration.current
-        var boxWidth by remember {
-            mutableStateOf(0.dp)
-        }   //需要获取父容器宽度来计算两个圆圈的宽度, 不直接设置fraction参数是因为大小不太对
-        val theme = configuration.customization.theme
+        val customization = configuration.customization
+        val appearance = customization.appearance
+
+        // 呼吸动效：仅在动画未被关闭时运行
         val infiniteTransition = rememberInfiniteTransition(label = "")
         val breathingAlpha by infiniteTransition.animateFloat(
             initialValue = 1f,
@@ -139,7 +141,6 @@ fun CirclesBackground(
             ),
             label = ""
         )
-        //TODO 研究一下换成fraction参数
         LaunchedEffect(key1 = toastContent, block = {
             if (toastContent.isNotEmpty()) {
                 delay(2000)
@@ -153,127 +154,61 @@ fun CirclesBackground(
             }
         })
 
-        when (theme) {
-            null -> {}
-            Theme.Light -> {
-                Box(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .background(backgroundColor)
-                        .onGloballyPositioned {
-                            boxWidth = with(localDensity) { it.size.width.toDp() }
-                        }) {
-                    WearBiliAnimatedVisibility(
-                        visible = isShowing,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            var circleHeight by remember {
-                                mutableStateOf(0.dp)
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .offset(y = circleHeight * -0.5f)
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
-                                    .alpha(if (uiState == UIState.Loading) ambientAlpha * breathingAlpha * 0.5f else ambientAlpha * 0.5f)
-                                    .background(
-                                        shape = CircleShape, brush = Brush.radialGradient(
-                                            listOf(themeColor, Color.Transparent)
-                                        )
-                                    )
-                                    .onSizeChanged {
-                                        circleHeight = with(localDensity) { it.height.toDp() }
-                                    }
-                            )
-                        }
+        // 2026 改版：
+        // 原实现依赖 Theme(Light/Black/Round) 三选一，其中 Round 用矢量圆形贴图做装饰。
+        // 现在背景统一由 Appearance 驱动：
+        //   - PureBlack：纯黑底，不绘制氛围光晕（OLED 省电）
+        //   - 其余：绘制顶部径向渐变光晕，颜色取自 ColorScheme.primary，
+        //           因此自动跟随 Monet 动态取色或用户选定的装扮色。
+        val scheme = MaterialTheme.colorScheme
+        val baseBackground =
+            if (appearance == Appearance.PureBlack) OledBlack else scheme.background
 
-                    }
-                    LoadableBox(
-                        uiState = uiState,
-                        content = content,
-                        onLongClick = { },
-                        onRetry = onRetry
-                    )
-                }
-            }
-
-            Theme.Black -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(backgroundColor)
-                ) {
-                    LoadableBox(
-                        uiState = uiState,
-                        content = content,
-                        onLongClick = { },
-                        onRetry = onRetry
-                    )
-                }
-            }
-
-            Theme.Round -> {
-
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(baseBackground)
+        ) {
+            if (appearance != Appearance.PureBlack) {
                 WearBiliAnimatedVisibility(
                     visible = isShowing,
                     enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier.fillMaxSize()
+                    exit = fadeOut()
                 ) {
-                    Box(modifier = modifier
-                        .fillMaxSize()
-                        .background(backgroundColor)
-                        .onGloballyPositioned {
-                            boxWidth = with(localDensity) { it.size.width.toDp() }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        var circleHeight by remember {
+                            mutableStateOf(0.dp)
                         }
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.img_circle_top_right),
-                            contentDescription = null,
+                        Box(
                             modifier = Modifier
-                                .align(
-                                    Alignment.TopEnd
+                                .offset(y = circleHeight * -0.5f)
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                                .alpha(
+                                    if (uiState == UIState.Loading) ambientAlpha * breathingAlpha * 0.5f
+                                    else ambientAlpha * 0.5f
                                 )
-                                .size(boxWidth * 0.75f)
-                                .alpha(if (uiState == UIState.Loading) breathingAlpha else 1f)
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.img_circle_bottom_left),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .align(
-                                    Alignment.BottomStart
+                                .background(
+                                    shape = CircleShape, brush = Brush.radialGradient(
+                                        listOf(scheme.primary, Color.Transparent)
+                                    )
                                 )
-                                .size(boxWidth * 0.75f)
-                                .alpha(if (uiState == UIState.Loading) breathingAlpha else 1f)
+                                .onSizeChanged {
+                                    circleHeight = with(localDensity) { it.height.toDp() }
+                                }
                         )
                     }
                 }
-                LoadableBox(
-                    uiState = uiState,
-                    content = content,
-                    onLongClick = { },
-                    onRetry = onRetry
-                )
             }
 
-            Theme.UNRECOGNIZED -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black), contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "说！你是不是乱动配置文件了！现在我真的不知道要用什么主题了啦！！",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = wearbiliFontFamily
-                    )
-                }
-            }
+            LoadableBox(
+                uiState = uiState,
+                content = content,
+                onLongClick = { },
+                onRetry = onRetry
+            )
         }
+
         Box(modifier = Modifier.fillMaxSize()) {
             WearBiliAnimatedVisibility(
                 visible = toastContent.isNotEmpty(),

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +43,7 @@ import cn.spacexc.wearbili.remake.R
 import cn.spacexc.wearbili.remake.app.Application
 import cn.spacexc.wearbili.remake.app.feedback.ui.issues.AllIssuesScreen
 import cn.spacexc.wearbili.remake.app.settings.experimantal.ExperimentalFunctionsScreen
+import cn.spacexc.wearbili.remake.app.settings.personalization.PersonalizationScreen
 import cn.spacexc.wearbili.remake.app.settings.scaling.ScaleAdjustingScreen
 import cn.spacexc.wearbili.remake.app.settings.toolbar.ui.QuickToolbarCustomizationScreen
 import cn.spacexc.wearbili.remake.app.welcome.screens.ReWearBiliText
@@ -81,7 +83,7 @@ fun SettingsScreen(
         ) {
             Text(
                 text = "设置",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
@@ -90,7 +92,7 @@ fun SettingsScreen(
             )
             Text(
                 text = "调整选项与设置",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Normal,
@@ -138,7 +140,7 @@ fun SettingsScreen(
                     ReWearBiliText(fontSize = 14.sp)
                     Text(
                         text = "${Application.getVersionName()} Ver.${Application.getVersionCode()} Rel.${Application.getReleaseNumber()}",
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Normal,
                         fontFamily = wearbiliFontFamily,
                         fontSize = 9.sp,
@@ -171,7 +173,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     name = "界面缩放"
@@ -187,7 +189,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     name = "快捷功能"
@@ -201,7 +203,7 @@ fun SettingsScreen(
                     },
                     name = "个性化"
                 ) {
-
+                    navController.navigate(PersonalizationScreen)
                 }
                 SettingsItemV2(
                     modifier = Modifier.weight(1f),
@@ -212,7 +214,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     name = "实验功能"
@@ -228,7 +230,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(1.5.dp),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     name = "反馈中心"
@@ -289,7 +291,7 @@ fun SettingsItemV2(
                 fontWeight = FontWeight.Medium,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 13.sp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }

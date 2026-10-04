@@ -77,6 +77,7 @@ import cn.spacexc.wearbili.remake.app.season.ui.SeasonScreen
 import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 import cn.spacexc.wearbili.remake.app.settings.ProvideConfiguration
 import cn.spacexc.wearbili.remake.app.settings.experimantal.ExperimentalFunctionsScreen
+import cn.spacexc.wearbili.remake.app.settings.personalization.PersonalizationScreen
 import cn.spacexc.wearbili.remake.app.settings.scaling.ScaleAdjustingScreen
 import cn.spacexc.wearbili.remake.app.settings.toolbar.ui.QuickToolbarCustomizationScreen
 import cn.spacexc.wearbili.remake.app.settings.ui.SettingsScreen
@@ -315,6 +316,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable<QuickToolbarCustomizationScreen> {
                                         QuickToolbarCustomizationScreen(navController = navController)
+                                    }
+                                    composable<PersonalizationScreen> {
+                                        PersonalizationScreen(navController = navController)
                                     }
                                     composable<DeviceDiscoverScreen> {
                                         DeviceDiscoverScreen(navController = navController)
