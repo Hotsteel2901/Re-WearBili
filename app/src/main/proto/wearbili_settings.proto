@@ -121,10 +121,11 @@ message PlaybackEnhancement {
   bool rememberProgress = 1;        // 记忆播放进度，下次自动续播
   bool autoPlayNext = 2;            // 播完自动连播（分P / 推荐）
   bool backgroundAudio = 3;         // 退到后台继续播放音频
-  bool skipOpening = 4;             // 自动跳过片头片尾（按视频时长比例）
+  bool skipOpening = 4;             // 自动跳过片头
   float playbackSpeed = 5;          // 默认倍速（1.0 为正常）
   int32 skipOpeningSeconds = 6;     // 片头跳过秒数
   int32 skipEndingSeconds = 7;      // 片尾跳过秒数
+  bool skipEnding = 8;              // 自动跳过片尾
 }
 
 /**

@@ -193,13 +193,31 @@ class IjkVideoPlayerViewModel @Inject constructor(
 
     var isPaused = false
 
+    /**
+     * 播放增强配置快照。
+     *
+     * 在播放开始前读取一次并缓存：设置页改动后重新进入播放器即可生效，
+     * 避免每次 seek/计时都去 DataStore 取一遍（那是 runBlocking 调用，代价高）。
+     */
+    private val playbackConfig
+        get() = SettingsManager.getConfiguration().playback
+
+    /** 当前生效的播放倍速，供 UI 初始化滑块位置 */
+    var currentPlaybackSpeed by mutableFloatStateOf(1f)
+
+    /** 是否已执行过片头跳过（避免重复 seek 抖动） */
+    private var hasSkippedOpening = false
+
+    /** 标记：用户是否手动拖动过进度（手动拖动后不再自动跳过片头） */
+    private var userSeekedManually = false
+
     init {
         httpPlayer.apply {
             setOnPreparedListener {
                 if (isPaused) {
                     it.start()
                 }
-                it.seekTo(videoHistoryPlayProgress)
+                applyPlaybackEnhancements(it)
                 startContinuouslyUpdatingSubtitle()
                 videoPlayerAspectRatio = it.videoWidth.toFloat() / it.videoHeight.toFloat()
                 //httpPlayer.videoSize.width.toFloat() / httpPlayer.videoSize.height.toFloat()
@@ -216,6 +234,7 @@ class IjkVideoPlayerViewModel @Inject constructor(
             }
             setOnCompletionListener {
                 currentStat = PlayerStats.Finished
+                handlePlaybackCompleted()
             }
             setOnInfoListener { _, what, _ ->
                 when (what) {
@@ -244,6 +263,7 @@ class IjkVideoPlayerViewModel @Inject constructor(
             }
             setOnCompletionListener {
                 currentStat = PlayerStats.Finished
+                handlePlaybackCompleted()
             }
             setOnInfoListener { player, what, extra ->
                 when (what) {
@@ -257,6 +277,93 @@ class IjkVideoPlayerViewModel @Inject constructor(
                 }
                 false
             }
+        }
+    }
+
+    /**
+     * 应用播放增强设置（续播 / 倍速 / 跳过片头）。
+     *
+     * 归拢在一处，保证 httpPlayer 与 cachePlayer 走同一套逻辑，
+     * 也方便后续新增项时只改这一个方法。
+     */
+    private fun applyPlaybackEnhancements(player: IMediaPlayer) {
+        val config = playbackConfig
+        hasSkippedOpening = false
+
+        // 1) 续播：仅在开启时使用服务端返回的历史进度
+        val seekTarget = if (config.rememberProgress) {
+            videoHistoryPlayProgress
+        } else {
+            0L
+        }
+
+        // 2) 跳过片头：优先于续播位置（若片头更长则用片头时长）
+        val skipOpeningMs = if (config.skipOpening) {
+            config.skipOpeningSeconds.coerceAtLeast(0) * 1000L
+        } else {
+            0L
+        }
+        val finalTarget = maxOf(seekTarget, skipOpeningMs)
+        if (finalTarget > 0L) {
+            player.seekTo(finalTarget)
+            hasSkippedOpening = skipOpeningMs > 0L
+        }
+
+        // 3) 默认倍速
+        applyPlaybackSpeed(config.playbackSpeed.coerceIn(0.25f, 3.0f))
+    }
+
+    /** 设置播放倍速（同时同步给弹幕渲染层，保持弹幕与画面同速） */
+    fun applyPlaybackSpeed(speed: Float) {
+        val safeSpeed = speed.coerceIn(0.25f, 3.0f)
+        currentPlaybackSpeed = safeSpeed
+        runCatching {
+            httpPlayer.setSpeed(safeSpeed)
+            cachePlayer.setSpeed(safeSpeed)
+        }.onFailure { Log.d(TAG, "setSpeed failed: ${it.message}") }
+    }
+
+    /**
+     * 播放结束处理：自动连播。
+     *
+     * 这里只负责发出信号（设置 [playbackCompleted] 为 true），
+     * 由 UI 层决定播放列表里的下一个是谁 —— ViewModel 不该知道列表结构。
+     */
+    var playbackCompleted by mutableStateOf(false)
+        private set
+
+    private fun handlePlaybackCompleted() {
+        if (playbackConfig.autoPlayNext) {
+            playbackCompleted = true
+        }
+    }
+
+    /** 消费连播事件，避免 recomposition 重复触发 */
+    fun consumePlaybackCompleted() {
+        playbackCompleted = false
+    }
+
+    /** 用户手动拖动进度，标记后不再自动跳过片尾 */
+    fun onUserSeek() {
+        userSeekedManually = true
+    }
+
+    /**
+     * 定时检查是否到达片尾，需要跳过。
+     *
+     * 由进度更新循环调用（见 startContinuouslyUploadingPlayingProgress）。
+     */
+    private fun checkSkipEnding() {
+        val config = playbackConfig
+        if (!config.skipEnding || userSeekedManually) return
+        val skipSeconds = config.skipEndingSeconds.coerceAtLeast(0)
+        if (skipSeconds <= 0) return
+        val duration = videoDuration
+        if (duration <= 0L) return
+        val endThreshold = duration - skipSeconds * 1000L
+        if (endThreshold > 0 && httpPlayer.currentPosition >= endThreshold) {
+            currentStat = PlayerStats.Finished
+            handlePlaybackCompleted()
         }
     }
 
@@ -620,6 +727,8 @@ class IjkVideoPlayerViewModel @Inject constructor(
             if (UserUtils.isUserLoggedIn() && UserUtils.csrf() != null) {
                 videoInfo?.let {
                     while (true) {
+                        // 跳过片尾：每小时钟检查一次，到达阈值直接触发连播
+                        checkSkipEnding()
                         VideoAction.updateHistory(
                             aid = it.data.aid,
                             cid = it.data.cid,

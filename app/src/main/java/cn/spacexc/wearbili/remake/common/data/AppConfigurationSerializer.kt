@@ -52,6 +52,27 @@ object AppConfigurationSerializer : Serializer<AppConfiguration> {
                 animationLevel = AnimationLevel.Standard
                 themeColorHex = ""
             }
+            playback = playback.copy {
+                // 播放增强默认值：续播与连播开箱即用，片头片尾跳过默认关闭
+                // （跳过是强干预行为，交给用户主动开启更稳妥）
+                rememberProgress = true
+                autoPlayNext = false
+                backgroundAudio = false
+                skipOpening = false
+                skipEnding = false
+                playbackSpeed = 1.0f
+                skipOpeningSeconds = 15
+                skipEndingSeconds = 15
+            }
+            browsing = browsing.copy {
+                // 隐藏推广默认开启（用户普遍期望），其余保持中立默认
+                hideAds = true
+                hideLowQualityCover = false
+                showVideoStats = false
+                longPressMenu = true
+                compactMode = false
+                autoRotate = false
+            }
         }
 
 

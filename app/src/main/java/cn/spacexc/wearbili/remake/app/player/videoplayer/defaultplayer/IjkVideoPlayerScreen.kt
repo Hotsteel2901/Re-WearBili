@@ -121,6 +121,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import appendBiliIcon
@@ -136,6 +139,7 @@ import cn.spacexc.wearbili.remake.app.player.videoplayer.danmaku.compose.remembe
 import cn.spacexc.wearbili.remake.app.player.videoplayer.danmaku.compose.ui.DanmakuCanvas
 import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 import cn.spacexc.wearbili.remake.app.settings.SettingsManager
+import cn.spacexc.wearbili.remake.app.video.info.ui.VIDEO_TYPE_BVID
 import cn.spacexc.wearbili.remake.common.ui.BilibiliPink
 import cn.spacexc.wearbili.remake.common.ui.Card
 import cn.spacexc.wearbili.remake.common.ui.GradientSlider
@@ -238,6 +242,42 @@ fun SharedTransitionScope.IjkVideoPlayerScreen(
         }
     }
 
+    // 后台音频：设置开启时，退到后台不暂停；关闭时按常规暂停，避免后台偷跑流量/电量
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val backgroundAudioEnabled = LocalConfiguration.current.playback.backgroundAudio
+    DisposableEffect(key1 = lifecycleOwner, key2 = backgroundAudioEnabled) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> {
+                    if (!backgroundAudioEnabled) {
+                        // 仅在正在播放时暂停，避免把用户手动暂停的状态覆盖掉
+                        if (viewModel.httpPlayer.isPlaying) {
+                            viewModel.httpPlayer.pause()
+                            viewModel.isPaused = true
+                        }
+                        if (viewModel.cachePlayer.isPlaying) {
+                            viewModel.cachePlayer.pause()
+                            viewModel.isPaused = true
+                        }
+                    }
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    // 后台音频期间被系统暂停的场景下，回到前台恢复播放
+                    if (backgroundAudioEnabled && viewModel.isPaused && viewModel.isReady) {
+                        if (viewModel.cacheVideoInfo != null) viewModel.cachePlayer.start()
+                        else viewModel.httpPlayer.start()
+                        viewModel.isPaused = false
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     LaunchedEffect(key1 = Unit) {
         if (isCacheVideo) {
             viewModel.viewModelScope.launch {
@@ -289,7 +329,8 @@ fun SharedTransitionScope.IjkVideoPlayerScreen(
         mutableFloatStateOf(60f)
     }
     var playBackSpeed by remember {
-        mutableIntStateOf(100)
+        // 以设置的默认倍速初始化，而不是硬编码 1.0x
+        mutableIntStateOf((viewModel.currentPlaybackSpeed * 100).toInt())
     }
     var currentVolume by remember {
         mutableFloatStateOf(context.getCurrentVolume().toFloat())
@@ -451,6 +492,26 @@ fun SharedTransitionScope.IjkVideoPlayerScreen(
             PlayerStats.Finished -> {
                 danmakuCanvasState.pause()
             }
+        }
+    })
+    // 自动连播：播完（或触发片尾跳过）后自动切到下一分P / 返回
+    LaunchedEffect(key1 = viewModel.playbackCompleted, block = {
+        if (!viewModel.playbackCompleted) return@LaunchedEffect
+        viewModel.consumePlaybackCompleted()
+        val pages = viewModel.videoInfo?.data?.pages.orEmpty()
+        val currentIndex = pages.indexOfFirst { it.cid == viewModel.currentVideoCid }
+        val next = pages.getOrNull(currentIndex + 1)
+        if (next != null && currentIndex >= 0) {
+            // 切到下一分P：走与手动选P相同的入口，保证 danmaku / 字幕 / 进度都被重置
+            viewModel.playVideoFromId(
+                videoIdType = VIDEO_TYPE_BVID,
+                videoId = viewModel.videoInfo?.data?.bvid.orEmpty(),
+                videoCid = next.cid,
+                isBangumi = false
+            )
+        } else {
+            // 没有下一P时退回上一页，避免停在黑屏
+            navController.navigateUp()
         }
     })
     //endregion
@@ -1412,7 +1473,7 @@ fun SharedTransitionScope.IjkVideoPlayerScreen(
                                         text = i.toFloat().div(100).toString() + "x",
                                         isSelected = playBackSpeed == i
                                     ) {
-                                        viewModel.httpPlayer.setSpeed(i.toFloat().div(100))
+                                        viewModel.applyPlaybackSpeed(i.toFloat().div(100))
                                         playBackSpeed = i
                                         //danmakuCanvasState.timer.setSpeed(i / 100f)
                                     }
@@ -1422,7 +1483,7 @@ fun SharedTransitionScope.IjkVideoPlayerScreen(
                                         text = i.toFloat().div(100).toString() + "x",
                                         isSelected = playBackSpeed == i
                                     ) {
-                                        viewModel.httpPlayer.setSpeed(i.toFloat().div(100))
+                                        viewModel.applyPlaybackSpeed(i.toFloat().div(100))
                                         playBackSpeed = i
                                         //danmakuCanvasState.timer.setSpeed(i / 100f)
                                     }
