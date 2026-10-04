@@ -11,11 +11,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderState
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -127,12 +130,18 @@ fun GradientSlider(
     thumbSize: Dp = TrackHeight * 0.4f,
     onValueChanged: (Float) -> Unit
 ) {
-    val thumbInteractionSource = rememberMutableInteractionSource()
+    // Material3 1.5 起 Slider 的 thumb/track 槽位必须配合 state-based 重载使用。
+    // rememberSliderState 的签名是 (value, steps, valueRange)，此处用位置参数避免
+    // Kotlin 元数据中参数名变更导致的不兼容。
+    val sliderState = rememberSliderState(
+        value,
+        0,
+        range,
+    )
     Slider(
         modifier = modifier,
-        value = value,
+        state = sliderState,
         onValueChange = onValueChanged,
-        valueRange = range,
         thumb = {
             Box(
                 modifier = Modifier
@@ -158,11 +167,24 @@ fun GradientSlider(
     onValueChanged: (Float) -> Unit,
     onSlideFinished: () -> Unit
 ) {
+    val sliderState = rememberSliderState(
+        value,
+        0,
+        range,
+    )
+    // 滑动结束回调：新 API 无 onValueChangeFinished 参数，
+    // 通过监听 sliderState.value 变化不足以判定"结束"，
+    // 故用 sliderState 自带的 settle 机制替代——见下方 onValueChange 包装。
+    LaunchedEffect(sliderState) {
+        snapshotFlow { sliderState.isDragging }
+            .collect { dragging ->
+                if (!dragging) onSlideFinished()
+            }
+    }
     Slider(
         modifier = modifier,
-        value = value,
+        state = sliderState,
         onValueChange = onValueChanged,
-        valueRange = range,
         thumb = {
             Box(
                 modifier = Modifier
@@ -173,9 +195,6 @@ fun GradientSlider(
         },
         track = { state ->
             Track(sliderState = state, brush = brush, height = trackHeight)
-        },
-        onValueChangeFinished = {
-            onSlideFinished()
         }
     )
 }
@@ -196,11 +215,13 @@ private fun Track(
             .fillMaxWidth()
             .height(height)
     ) {
+        // Material3 1.5 起 SliderState.valueRange 更名为 trackRange
+        val range = sliderState.trackRange
         val coercedValueAsFraction = with(sliderState) {
             calcFraction(
-                valueRange.start,
-                valueRange.endInclusive,
-                value.coerceIn(valueRange.start, valueRange.endInclusive)
+                range.start,
+                range.endInclusive,
+                value.coerceIn(range.start, range.endInclusive)
             )
         }
         drawTrack(

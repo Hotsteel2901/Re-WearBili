@@ -5,8 +5,11 @@ import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
+import cn.spacexc.wearbili.remake.proto.settings.AnimationLevel
 import cn.spacexc.wearbili.remake.proto.settings.AppConfiguration
+import cn.spacexc.wearbili.remake.proto.settings.Appearance
 import cn.spacexc.wearbili.remake.proto.settings.QuickToolBarFunction
+import cn.spacexc.wearbili.remake.proto.settings.QuickToolBarSlotCount
 import cn.spacexc.wearbili.remake.proto.settings.RecommendSource
 import cn.spacexc.wearbili.remake.proto.settings.Theme
 import cn.spacexc.wearbili.remake.proto.settings.copy
@@ -33,13 +36,21 @@ object AppConfigurationSerializer : Serializer<AppConfiguration> {
             }
             screenDisplayScaleFactor = 1.0f
             toolBarConfiguration = toolBarConfiguration.copy {
+                slotCount = QuickToolBarSlotCount.Two
                 functionOne = QuickToolBarFunction.History
-                functionOne = QuickToolBarFunction.Search
+                functionTwo = QuickToolBarFunction.Search
             }
             customization = customization.copy {
                 recommendPageLargeCard = false
                 videoCoverColorAbsorb = true
                 theme = Theme.Light
+                // 2026 改版新增字段的默认值
+                // 注意：原 UI 为硬编码深色，故默认 AlwaysDark 才与实际外观一致
+                appearance = Appearance.AlwaysDark
+                monetEnabled = true      // API < 31 会自动回落默认粉色方案
+                glassEnabled = true
+                animationLevel = AnimationLevel.Standard
+                themeColorHex = ""
             }
         }
 

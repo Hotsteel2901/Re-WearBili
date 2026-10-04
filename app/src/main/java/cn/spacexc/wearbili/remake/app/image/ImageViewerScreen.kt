@@ -79,10 +79,13 @@ fun SharedTransitionScope.ImageViewerScreen(
         }
         Box {
             HorizontalPager(state = pagerState) { page ->
+                // 显式使用 this@ImageViewerScreen 作为 receiver，
+                // 避免在参数位置嵌套调用时编译器无法正确解析 SharedTransitionScope
+                val sharedState = this@ImageViewerScreen.rememberSharedContentState(key = "image$page")
                 BiliImage(
                     url = images[page], contentDescription = null, modifier = Modifier
                         .sharedElement(
-                            state = rememberSharedContentState(key = "image$page"),
+                            sharedContentState = sharedState,
                             animatedVisibilityScope = animatedVisibilityScope
                         )
                         .fillMaxSize()

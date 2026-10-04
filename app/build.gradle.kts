@@ -153,6 +153,9 @@ kotlin {
 dependencies {
     testImplementation(libs.junit)
 
+    // Compose BOM 统一管理 compose.ui / foundation / runtime（material3 单独覆盖到 Expressive 版本）
+    implementation(platform(libs.androidx.compose.bom))
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
@@ -165,6 +168,11 @@ dependencies {
     implementation(libs.androidx.palette.ktx)
     // AGP 9 内建 Kotlin 后，parcelize 运行时依赖不再自动附带，需显式声明
     implementation(libs.kotlin.parcelize.runtime)
+
+    // Haze 液态玻璃 / 毛玻璃
+    implementation(libs.haze)
+    implementation(libs.haze.blur)
+    implementation(libs.haze.blur.materials)
 
     implementation(libs.kotlinx.metadata.jvm)
     implementation(project(":app:common"))

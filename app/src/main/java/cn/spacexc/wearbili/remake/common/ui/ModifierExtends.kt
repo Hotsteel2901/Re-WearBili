@@ -25,7 +25,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import cn.spacexc.wearbili.common.copyToClipboard
 import cn.spacexc.wearbili.remake.app.Application
-import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -76,7 +75,7 @@ fun Modifier.clickVfx(
     isEnabled: Boolean = true,
     onClick: () -> Unit,
 ): Modifier = composed {
-    val isLowPerformance = !LocalConfiguration.current.hasAnimation
+    val isLowPerformance = isLowPerformanceMode
     if (isEnabled) {
         if (isLowPerformance) {
             clickable(
@@ -104,7 +103,7 @@ fun Modifier.clickVfx(
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
 ): Modifier = composed {
-    val isLowPerformance = !LocalConfiguration.current.hasAnimation
+    val isLowPerformance = isLowPerformanceMode
     if (enabled) {
         if (isLowPerformance) {
             pointerInput(Unit) {
@@ -147,7 +146,7 @@ fun Modifier.clickAlpha(
     onClick: () -> Unit,
 ): Modifier = composed {
     if (isEnabled) {
-        val isLowPerformance = !LocalConfiguration.current.hasAnimation
+        val isLowPerformance = isLowPerformanceMode
         if (isLowPerformance) {
             clickable(
                 indication = null, interactionSource = interactionSource, onClick = onClick
@@ -175,7 +174,7 @@ fun Modifier.clickAlpha(
     onLongClick: () -> Unit = {}
 ): Modifier = composed {
     if (enabled) {
-        val isLowPerformance = !LocalConfiguration.current.hasAnimation
+        val isLowPerformance = isLowPerformanceMode
         if (isLowPerformance) {
             pointerInput(Unit) {
                 detectTapGestures(

@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.unit.IntSize
-import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 
 /**
  * Created by XC-Qan on 2023/4/16.
@@ -22,18 +21,27 @@ fun Modifier.wearBiliAnimatedContentSize(
     animationSpec: FiniteAnimationSpec<IntSize> = spring(),
     finishedListener: ((initialValue: IntSize, targetValue: IntSize) -> Unit)? = null
 ): Modifier = composed {
-    if (LocalConfiguration.current.hasAnimation) {
+    if (isAnimationEnabled) {
         animateContentSize(
             animationSpec, finishedListener
         )
     } else Modifier
 }
 
+/**
+ * 列表项位移动画。
+ *
+ * 原实现用的 animateItemPlacement() 已在新版 Compose 中移除，
+ * 替代品是 LazyItemScope.animateItem(fadeInSpec, placementSpec, fadeOutSpec)。
+ * 参数顺序：淡入 / 位移 / 淡出。
+ */
 @OptIn(ExperimentalFoundationApi::class)
 fun Modifier.wearBiliAnimateContentPlacement(scope: LazyItemScope): Modifier = composed {
-    if (LocalConfiguration.current.hasAnimation) {
+    if (isAnimationEnabled) {
         with(scope) {
-            animateItemPlacement()
+            animateItem(
+                placementSpec = animationSpecOffset,
+            )
         }
     } else Modifier
 }

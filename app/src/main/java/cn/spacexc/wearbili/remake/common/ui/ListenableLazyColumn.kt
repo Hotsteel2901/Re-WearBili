@@ -93,15 +93,17 @@ fun ListenableLazyColumn(
     }
 
     //将lazyListState赋值给LazyColumn
+    // 注意：全部改用具名参数。新版 LazyColumn 在 userScrollEnabled 后新增了
+    // overscrollEffect 等参数，位置传参会静默错位。
     LazyColumn(
-        modifier,
-        state,
-        contentPadding,
-        reverseLayout,
-        verticalArrangement,
-        horizontalAlignment,
-        flingBehavior,
-        userScrollEnabled,
-        content
+        modifier = modifier,
+        state = state,
+        contentPadding = contentPadding,
+        reverseLayout = reverseLayout,
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment,
+        flingBehavior = flingBehavior,
+        userScrollEnabled = userScrollEnabled,
+        content = content
     )
 }

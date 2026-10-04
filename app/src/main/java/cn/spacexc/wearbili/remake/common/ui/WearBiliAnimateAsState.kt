@@ -21,14 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import cn.spacexc.wearbili.remake.app.settings.LocalConfiguration
 
 @Composable
 fun wearBiliAnimateFloatAsState(
     targetValue: Float,
     animationSpec: AnimationSpec<Float> = tween()
 ): State<Float> {
-    return if (LocalConfiguration.current.hasAnimation) animateFloatAsState(
+    return if (isAnimationEnabled) animateFloatAsState(
         targetValue = targetValue,
         label = "",
         animationSpec = animationSpec
@@ -42,7 +41,7 @@ fun wearBiliAnimateDpAsState(
     targetValue: Dp,
     animationSpec: AnimationSpec<Dp> = tween()
 ): State<Dp> {
-    return if (LocalConfiguration.current.hasAnimation) animateDpAsState(
+    return if (isAnimationEnabled) animateDpAsState(
         targetValue = targetValue,
         label = "",
         animationSpec = animationSpec
@@ -56,7 +55,7 @@ fun wearBiliAnimateColorAsState(
     targetValue: Color,
     animationSpec: AnimationSpec<Color> = tween()
 ): State<Color> {
-    return if (LocalConfiguration.current.hasAnimation) animateColorAsState(
+    return if (isAnimationEnabled) animateColorAsState(
         targetValue = targetValue,
         label = "",
         animationSpec = animationSpec
@@ -79,7 +78,7 @@ fun <S> WearBiliAnimatedContent(
     contentKey: (targetState: S) -> Any? = { it },
     content: @Composable (targetState: S) -> Unit
 ) {
-    if (LocalConfiguration.current.hasAnimation) {
+    if (isAnimationEnabled) {
         AnimatedContent(
             targetState,
             modifier,

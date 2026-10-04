@@ -59,11 +59,37 @@ enum Theme {
   Round = 2;
 }
 
+// 明暗模式。注意：与 Theme 的区别在于 Theme 控制的是"背景装饰样式"，
+// Appearance 控制的是"明暗/配色方案"。二者独立。
+enum Appearance {
+  FollowSystem = 0;   // 跟随系统
+  AlwaysDark = 1;     // 强制深色（本项目默认，与原有硬编码深色 UI 对齐）
+  AlwaysLight = 2;    // 强制浅色
+  PureBlack = 3;      // 纯黑（OLED 省电）
+}
+
+// 动画档位，替代原 hasAnimation 二值开关，用于低性能手表降级
+enum AnimationLevel {
+  Off = 0;        // 无动画
+  Minimal = 1;    // 仅必要过渡
+  Standard = 2;   // 标准（默认）
+  Full = 3;       // 拉满（Expressive 弹簧动效全开）
+}
+
 message Customization {
   bool videoCoverColorAbsorb = 1;
   bool recommendPageLargeCard = 2;
   Theme theme = 3;
-  string themeColor = 4;
+  // 4 号字段 themeColor 已废弃（死配置，从未被读取），保留占位避免复用旧 tag
+  reserved 4;
+  reserved "themeColor";
+
+  // ---- 以下为 2026 改版新增 ----
+  Appearance appearance = 5;        // 明暗模式
+  bool monetEnabled = 6;            // Monet 动态取色（API 31+）
+  bool glassEnabled = 7;            // Haze 液态玻璃效果
+  AnimationLevel animationLevel = 8;// 动画档位
+  string themeColorHex = 9;         // 自定义主色（#RRGGBB），空则用默认粉色
 }
 
 message AppConfiguration {
