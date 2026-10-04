@@ -63,7 +63,7 @@ enum Theme {
 // Appearance 控制的是"明暗/配色方案"。二者独立。
 enum Appearance {
   FollowSystem = 0;   // 跟随系统
-  AlwaysDark = 1;     // 强制深色（本项目默认，与原有硬编码深色 UI 对齐）
+  AlwaysDark = 1;     // 强制深色
   AlwaysLight = 2;    // 强制浅色
   PureBlack = 3;      // 纯黑（OLED 省电）
 }

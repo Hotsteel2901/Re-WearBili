@@ -46,8 +46,8 @@ object AppConfigurationSerializer : Serializer<AppConfiguration> {
                 videoCoverColorAbsorb = true
                 theme = Theme.Light
                 // 2026 改版新增字段的默认值
-                // 注意：原 UI 为硬编码深色，故默认 AlwaysDark 才与实际外观一致
-                appearance = Appearance.AlwaysDark
+                // 外观默认跟随系统明暗（整站 UI 已 MD3E 主题化，亮色可用）
+                appearance = Appearance.FollowSystem
                 monetEnabled = true      // API < 31 会自动回落默认粉色方案
                 glassEnabled = true
                 animationLevel = AnimationLevel.Standard

@@ -45,13 +45,13 @@ android {
 
     experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 
-    val releaseNumber = 3
+    val releaseNumber = 4
     defaultConfig {
         applicationId = "cn.spacexc.wearbili.remake"
         minSdk = 25
         targetSdk = 36
-        versionCode = 47
-        versionName = "Atlas 阿特拉斯"
+        versionCode = 48
+        versionName = "HotSteel 炽热钢铁"
         vectorDrawables {
             useSupportLibrary = true
         }
