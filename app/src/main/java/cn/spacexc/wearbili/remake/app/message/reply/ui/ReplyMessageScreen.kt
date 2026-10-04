@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.message.reply.ui
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -92,7 +93,7 @@ fun ReplyMessageCard(item: ReplyMessage, navController: NavController) {
             if(item.item.source_content.isNotEmpty()) {
                 Text(
                     text = item.item.source_content,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 13.sp,
                     fontFamily = wearbiliFontFamily,
                     maxLines = 2,
@@ -133,7 +134,7 @@ fun ReplyMessageCard(item: ReplyMessage, navController: NavController) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = title,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 11.sp,
                                     fontFamily = wearbiliFontFamily,
                                     maxLines = 2,
@@ -174,7 +175,7 @@ fun ReplyMessageCard(item: ReplyMessage, navController: NavController) {
                             } else if (title.isNotEmpty()) {
                                 Text(
                                     text = title,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 11.sp,
                                     fontFamily = wearbiliFontFamily,
                                     maxLines = 4,
@@ -190,7 +191,7 @@ fun ReplyMessageCard(item: ReplyMessage, navController: NavController) {
             }
             Text(
                 text = item.reply_time.times(1000).toDateStr(),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 10.sp,
                 fontFamily = wearbiliFontFamily,
                 modifier = Modifier.alpha(0.5f)

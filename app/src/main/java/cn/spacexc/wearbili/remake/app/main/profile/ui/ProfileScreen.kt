@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.main.profile.ui
 
+import androidx.compose.material3.MaterialTheme
 import BiliTextIcon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
@@ -197,9 +198,12 @@ fun ProfileScreen(
                                         }
                                     },
                                     style = AppTheme.typography.h2,
-                                    color = parseColor(
-                                        (user?.vip?.nickname_color
-                                            ?: "#FFFFFF").ifEmpty { "#FFFFFF" }),
+                                    // 主题化：API 未返回昵称颜色时回落到 onSurface，
+                                    // 修复亮色模式下白色 fallback 不可见
+                                    color = user?.vip?.nickname_color
+                                        ?.takeIf { it.isNotEmpty() }
+                                        ?.let { parseColor(it) }
+                                        ?: MaterialTheme.colorScheme.onSurface,
                                     inlineContent = inlineTextContent,
                                     modifier = Modifier
                                         .onSizeChanged {
@@ -238,7 +242,7 @@ fun ProfileScreen(
                                     Text(
                                         text = user?.coins.toString(),
                                         fontSize = 12.sp,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.shimmerPlaceHolder(user?.coins == null),
                                         fontFamily = wearbiliFontFamily
@@ -247,7 +251,7 @@ fun ProfileScreen(
                                     Text(
                                         text = "硬币",
                                         fontSize = 11.sp,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Medium,
                                         modifier = Modifier.alpha(0.8f),
                                         fontFamily = wearbiliFontFamily
@@ -267,7 +271,7 @@ fun ProfileScreen(
                                     Text(
                                         text = user?.follower.toString(),
                                         fontSize = 12.sp,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.shimmerPlaceHolder(user?.coins == null),
                                         fontFamily = wearbiliFontFamily
@@ -276,7 +280,7 @@ fun ProfileScreen(
                                     Text(
                                         text = "粉丝",
                                         fontSize = 11.sp,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         fontWeight = FontWeight.Medium,
                                         modifier = Modifier.alpha(0.8f),
                                         fontFamily = wearbiliFontFamily
@@ -388,7 +392,7 @@ fun ProfileScreen(
                                 icon = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_favourite),
-                                        tint = Color.White,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         contentDescription = null,
                                         modifier = Modifier
                                             .align(Alignment.Center)

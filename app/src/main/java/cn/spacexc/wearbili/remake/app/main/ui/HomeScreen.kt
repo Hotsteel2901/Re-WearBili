@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.main.ui
 
+import androidx.compose.material3.MaterialTheme
 import BiliTextIcon
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -242,7 +243,7 @@ fun SharedTransitionScope.HomeScreen(
                                     icon = {
                                         Icon(
                                             painter = painterResource(id = item.iconResId),
-                                            tint = Color.White,
+                                            tint = MaterialTheme.colorScheme.onSurface,
                                             contentDescription = null,
                                             modifier = Modifier
                                                 .align(Alignment.Center)

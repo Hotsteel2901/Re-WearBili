@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,7 +108,8 @@ fun DirectMessageScreen(
                                     fontFamily = wearbiliFontFamily,
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color.White
+                                    // 主题化：时间戳在页面背景上，气泡内白字（深灰/粉底）保留
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.height(6.dp))

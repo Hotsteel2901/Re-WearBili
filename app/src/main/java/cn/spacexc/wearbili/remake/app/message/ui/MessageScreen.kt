@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.message.ui
 
+import androidx.compose.material3.MaterialTheme
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -141,7 +142,7 @@ fun MessageTypeCard(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = name,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 fontFamily = wearbiliFontFamily
@@ -189,7 +190,7 @@ fun DirectMessageSessionCard(
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.shimmerPlaceHolder(userInfo == null),
                     fontFamily = wearbiliFontFamily
                 )
@@ -215,7 +216,7 @@ fun DirectMessageSessionCard(
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.alpha(0.7f),
                     fontFamily = wearbiliFontFamily
                 )

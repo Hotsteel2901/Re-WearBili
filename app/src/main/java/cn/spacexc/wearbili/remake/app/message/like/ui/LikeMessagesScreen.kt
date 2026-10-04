@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.message.like.ui
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -112,7 +113,7 @@ fun LikeMessageCard(item: LikeMessage, navController: NavController) {
                 },
                 fontFamily = wearbiliFontFamily,
                 fontSize = 12.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.alpha(0.95f)
             )
             item.item.apply {
@@ -154,7 +155,7 @@ fun LikeMessageCard(item: LikeMessage, navController: NavController) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = title,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontSize = 11.sp,
                                     fontFamily = wearbiliFontFamily,
                                     maxLines = 2,
@@ -181,7 +182,7 @@ fun LikeMessageCard(item: LikeMessage, navController: NavController) {
                         "dynamic", "reply", "danmu" -> {
                             Text(
                                 text = title,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 11.sp,
                                 fontFamily = wearbiliFontFamily,
                                 maxLines = 4,
@@ -193,7 +194,7 @@ fun LikeMessageCard(item: LikeMessage, navController: NavController) {
                         "album" -> {
                             Text(
                                 text = desc,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 11.sp,
                                 fontFamily = wearbiliFontFamily,
                                 maxLines = 4,
@@ -206,7 +207,7 @@ fun LikeMessageCard(item: LikeMessage, navController: NavController) {
             }
             Text(
                 text = item.like_time.times(1000).toDateStr(),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 10.sp,
                 fontFamily = wearbiliFontFamily,
                 modifier = Modifier.alpha(0.5f)

@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.message.system.ui
 
+import androidx.compose.material3.MaterialTheme
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -99,7 +100,7 @@ fun NotificationRichText(
     }
     Text(
         text = content,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.onSurface,
         fontFamily = wearbiliFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 10.5.sp
@@ -149,7 +150,7 @@ fun SystemNotificationCard(
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 text = notification.title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = wearbiliFontFamily,
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.5.sp
@@ -158,7 +159,7 @@ fun SystemNotificationCard(
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = notification.timeAt,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = wearbiliFontFamily,
                 fontSize = 9.sp,
                 modifier = Modifier.alpha(0.7f)

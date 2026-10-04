@@ -1,5 +1,6 @@
 package cn.spacexc.wearbili.remake.app.search.ui
 
+import androidx.compose.material3.MaterialTheme
 import android.os.Build.VERSION.SDK_INT
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -123,7 +124,7 @@ fun SearchScreen(
     Text(
         text = "xjdjdj",
         style = AppTheme.typography.body1,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.onSizeChanged {
             hotWordItemHeight = with(localDensity) { it.height.toDp() }
         }
@@ -179,7 +180,7 @@ fun SearchScreen(
                                 textStyle = TextStyle(
                                     fontSize = 14.sp,
                                     fontFamily = wearbiliFontFamily,
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onSurface
                                 ),
                                 modifier = Modifier
                                     .align(Alignment.CenterStart),
@@ -197,7 +198,7 @@ fun SearchScreen(
                                     style = TextStyle(
                                         fontSize = 14.sp,
                                         fontFamily = wearbiliFontFamily,
-                                        color = Color.White
+                                        color = MaterialTheme.colorScheme.onSurface
                                     ),
                                     modifier = Modifier
                                         .alpha(0.6f)
@@ -208,7 +209,7 @@ fun SearchScreen(
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
                             imageVector = Icons.Outlined.Search,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             contentDescription = null,
                             modifier = Modifier.clickVfx {
                                 if (searchInputValue.isNotEmpty()) {
@@ -236,7 +237,7 @@ fun SearchScreen(
                         Icon(
                             imageVector = Icons.Outlined.History,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -250,7 +251,7 @@ fun SearchScreen(
                             imageVector = Icons.Outlined.Delete,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -358,7 +359,7 @@ fun SearchScreen(
                     Icon(
                         imageVector = Icons.Outlined.LocalFireDepartment,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
