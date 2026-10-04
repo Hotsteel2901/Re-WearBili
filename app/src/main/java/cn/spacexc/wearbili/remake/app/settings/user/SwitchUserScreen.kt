@@ -215,7 +215,9 @@ fun SwitchUserScreen(
                                                 selectedUser = users[page]
                                             }
                                         } else {
-                                            navController.navigate(QrCodeLoginScreen)
+                                            navController.navigate(
+                                                cn.spacexc.wearbili.remake.app.login.LoginScreen
+                                            )
                                         }
                                     }
                                     .graphicsLayer {

@@ -378,6 +378,12 @@ class MainActivity : ComponentActivity() {
                                             navController = navController
                                         )
                                     }
+                                    composable<cn.spacexc.wearbili.remake.app.login.LoginScreen> {
+                                        cn.spacexc.wearbili.remake.app.login.LoginScreen(
+                                            navController = navController
+                                        )
+                                    }
+                                    // 旧扫码登录页保留为兼容路由（历史深链/回退栈可能引用）
                                     composable<QrCodeLoginScreen> {
                                         LoginScreen(navController = navController)
                                     }

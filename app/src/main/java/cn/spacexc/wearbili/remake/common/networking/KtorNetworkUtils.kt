@@ -165,6 +165,61 @@ class KtorNetworkUtils(val cookiesManager: CookiesManager) {
         return get(url = "$host?$param", builder = builder)
     }
 
+    /**
+     * 表单 POST + appSign 签名（App 端 passport 接口专用）。
+     *
+     * 与 `post` 的区别：
+     *  - Content-Type 为 form-urlencoded（B 站 App 端接口要求）
+     *  - 自动注入 appkey / ts / sign（见 [cn.spacexc.wearbili.remake.app.login.BiliAppSigner]）
+     *  - 走公共请求头（env / app-key / x-bili-aurora-zone）
+     *
+     * 使用 Ktor 的 Parameters 构建器而不是手工拼字符串，避免参数值含
+     * `+` `/` `=` 等字符时被错误编码（RSA 加密后的密码就是 base64，必须正确编码）。
+     */
+    suspend inline fun <reified T> postFormWithAppSign(
+        url: String,
+        params: Map<String, String?>,
+        builder: HttpRequestBuilder.() -> Unit = {}
+    ): NetworkResponse<T> {
+        return try {
+            val signed = cn.spacexc.wearbili.remake.app.login.BiliAppSigner.sign(params)
+            val response = client.post(url) {
+                setBody(
+                    Parameters.build {
+                        signed.forEach { (key, value) -> append(key, value) }
+                    }
+                )
+                contentType(ContentType.Application.FormUrlEncoded)
+                userAgent(cn.spacexc.wearbili.remake.app.login.BiliAppSigner.USER_AGENT)
+                cn.spacexc.wearbili.remake.app.login.BiliAppSigner.BASE_HEADERS.forEach {
+                    header(it.key, it.value)
+                }
+                header("Referer", "https://www.bilibili.com/")
+                builder()
+            }
+            with(cookiesManager) {
+                response.interceptAndSaveCookies()
+            }
+            if (response.status == HttpStatusCode.OK) {
+                NetworkResponse.Success(data = response.body(), apiUrl = url)
+            } else {
+                NetworkResponse.Failed(
+                    code = response.status.value,
+                    message = response.status.description,
+                    data = null,
+                    apiUrl = url
+                )
+            }
+        } catch (e: Exception) {
+            NetworkResponse.Failed(
+                code = -1,
+                message = e.message ?: "Unknown error",
+                data = null,
+                apiUrl = url
+            )
+        }
+    }
+
     suspend inline fun <reified T> getWithWbiSignature(
         endpoint: String,
         parameters: Map<String, String>,

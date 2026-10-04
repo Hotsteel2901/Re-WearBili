@@ -1,0 +1,454 @@
+package cn.spacexc.wearbili.remake.app.login
+
+import android.graphics.Bitmap
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import cn.spacexc.bilibilisdk.BilibiliSdkManager
+import cn.spacexc.wearbili.common.domain.qrcode.QRCodeUtil
+import cn.spacexc.wearbili.remake.app.login.domain.LoginApi
+import cn.spacexc.wearbili.remake.app.login.domain.LoginCookie
+import cn.spacexc.wearbili.remake.app.login.domain.LoginResultData
+import cn.spacexc.wearbili.remake.common.networking.CookiesManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.UUID
+import javax.inject.Inject
+
+/** 登录方式 */
+enum class LoginMethod(val title: String) {
+    QrCode("扫码"),
+    Cookie("Cookie"),
+    Password("密码"),
+    Sms("短信")
+}
+
+/** 登录流程状态 */
+enum class LoginUiState {
+    Idle,
+    Loading,
+    AwaitingScan,
+    ScannedConfirm,
+    SendingCode,
+    CodeSent,
+    Success,
+    Failed,
+    Timeout
+}
+
+/** 页面可变状态 */
+data class LoginPageState(
+    val method: LoginMethod = LoginMethod.QrCode,
+    val uiState: LoginUiState = LoginUiState.Idle,
+    val message: String? = null,
+    val qrCodeBitmap: Bitmap? = null,
+    val qrCodeExpireSeconds: Int = 0,
+    val smsCooldownSeconds: Int = 0
+)
+
+/**
+ * 统一登录 ViewModel。
+ *
+ * 支持四路登录（参考 PiliPlus），核心统一在 [persistLoginResult]：
+ * 无论哪条路径，最终都落到「写入 Cookie 到本地库 + 记录 uid」这一个出口，
+ * 避免多套落盘逻辑各自为政。
+ */
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val loginApi: LoginApi,
+    private val qrCodeUtil: QRCodeUtil,
+    private val cookiesManager: CookiesManager
+) : ViewModel() {
+
+    var state by mutableStateOf(LoginPageState())
+        private set
+
+    private var pollJob: Job? = null
+    private var qrCodeExpireJob: Job? = null
+    private var smsCooldownJob: Job? = null
+
+    /** 短信登录时暂存的 captcha_key（来自发送验证码的响应） */
+    private var smsCaptchaKey: String = ""
+
+    /** 设备指纹，首次生成后持久化，保证 App 端接口的 device_id 稳定 */
+    private var cachedDeviceId: String? = null
+
+    private suspend fun ensureDeviceId(): String {
+        cachedDeviceId?.let { return it }
+        val manager = BilibiliSdkManager.dataManager
+        val existing = manager.getString("login_device_id", null)
+        if (existing != null) {
+            cachedDeviceId = existing
+            return existing
+        }
+        val generated = UUID.randomUUID().toString().replace("-", "").uppercase()
+        manager.saveString("login_device_id", generated)
+        cachedDeviceId = generated
+        return generated
+    }
+
+    private suspend fun ensureBuvid(): String {
+        val manager = BilibiliSdkManager.dataManager
+        val existing = manager.getString("buvid", null)
+        if (!existing.isNullOrBlank()) return existing
+        // 兜底：生成一个符合格式的伪 buvid，避免接口因缺参直接失败
+        val generated = "XY" + UUID.randomUUID().toString().replace("-", "").uppercase()
+        manager.saveString("buvid", generated)
+        return generated
+    }
+
+    fun selectMethod(method: LoginMethod) {
+        if (state.method == method) return
+        stopAllJobs()
+        state = LoginPageState(method = method)
+    }
+
+    fun updateMessage(message: String?) {
+        state = state.copy(message = message)
+    }
+
+    // ---------------------------------------------------------------- 扫码登录
+
+    /** 启动 TV 端扫码登录 */
+    fun startQrCodeLogin() {
+        stopAllJobs()
+        state = state.copy(uiState = LoginUiState.Loading, message = null)
+        pollJob = viewModelScope.launch {
+            val code = loginApi.requestTvQrCode()
+            if (code == null) {
+                state = state.copy(uiState = LoginUiState.Failed, message = "二维码获取失败，点击重试")
+                return@launch
+            }
+            val (authCode, url) = code
+            val bitmap = qrCodeUtil.createQRCodeBitmap(
+                url, 512, 512,
+                cn.spacexc.wearbili.common.domain.qrcode.ERROR_CORRECTION_M
+            )
+            state = state.copy(
+                uiState = LoginUiState.AwaitingScan,
+                qrCodeBitmap = bitmap,
+                qrCodeExpireSeconds = 180,
+                message = "请使用哔哩哔哩客户端扫码"
+            )
+            startQrCodeExpireCountdown()
+            pollQrCode(authCode)
+        }
+    }
+
+    private fun startQrCodeExpireCountdown() {
+        qrCodeExpireJob?.cancel()
+        qrCodeExpireJob = viewModelScope.launch {
+            var left = 180
+            while (left > 0) {
+                delay(1000)
+                left--
+                state = state.copy(qrCodeExpireSeconds = left)
+                if (left <= 0) {
+                    state = state.copy(
+                        uiState = LoginUiState.Timeout,
+                        message = "二维码已过期，点击刷新"
+                    )
+                    stopAllJobs()
+                }
+            }
+        }
+    }
+
+    private suspend fun pollQrCode(authCode: String) {
+        while (true) {
+            val result = loginApi.pollTvQrCode(authCode)
+            if (result == null) {
+                delay(1500)
+                continue
+            }
+            if (result.code != 0) {
+                state = state.copy(
+                    uiState = LoginUiState.Failed,
+                    message = result.message ?: "登录失败 (${result.code})"
+                )
+                return
+            }
+            val data = result.data
+            when (data?.code) {
+                0L -> {
+                    // 扫码成功，已确认
+                    val cookies = data.cookieInfo?.cookies.orEmpty()
+                    if (cookies.isNotEmpty()) {
+                        persistLoginCookies(cookies, data.refreshToken)
+                    } else {
+                        // 没有 cookie_info 时回退：用返回的 url 里的参数构造
+                        val fallback = parseCookiesFromUrl(data.url)
+                        if (fallback.isNotEmpty()) {
+                            persistLoginCookies(fallback, data.refreshToken)
+                        } else {
+                            state = state.copy(
+                                uiState = LoginUiState.Failed,
+                                message = "登录响应缺少凭证"
+                            )
+                        }
+                    }
+                    return
+                }
+
+                86038L -> {
+                    state = state.copy(
+                        uiState = LoginUiState.Timeout,
+                        message = "二维码已过期，点击刷新"
+                    )
+                    return
+                }
+
+                86090L -> {
+                    state = state.copy(
+                        uiState = LoginUiState.ScannedConfirm,
+                        message = "已扫码，请在手机上确认"
+                    )
+                }
+
+                86101L -> {
+                    state = state.copy(
+                        uiState = LoginUiState.AwaitingScan,
+                        message = "请使用哔哩哔哩客户端扫码"
+                    )
+                }
+                // 其他状态码保持等待
+                else -> Unit
+            }
+            delay(1500)
+        }
+    }
+
+    /** 从 TV 登录返回的 url 里解析 cookie（部分版本不带 cookie_info） */
+    private fun parseCookiesFromUrl(url: String?): List<LoginCookie> {
+        if (url.isNullOrBlank()) return emptyList()
+        val query = url.substringAfter('?', "")
+        if (query.isEmpty()) return emptyList()
+        return query.split('&').mapNotNull { pair ->
+            val idx = pair.indexOf('=')
+            if (idx <= 0) return@mapNotNull null
+            val name = pair.substring(0, idx)
+            val value = pair.substring(idx + 1)
+            if (name.isBlank() || value.isBlank()) return@mapNotNull null
+            LoginCookie(name = name, value = value)
+        }
+    }
+
+    // --------------------------------------------------------------- Cookie 登录
+
+    /**
+     * Cookie 登录。
+     *
+     * 手表上没有 WebView，这是最实用的一条路径：用户从手机/电脑复制
+     * SESSDATA 等 Cookie 串粘贴进来即可。
+     */
+    fun loginByCookie(rawCookie: String) {
+        if (rawCookie.isBlank()) {
+            state = state.copy(uiState = LoginUiState.Failed, message = "Cookie 不能为空")
+            return
+        }
+        stopAllJobs()
+        state = state.copy(uiState = LoginUiState.Loading, message = "正在校验 Cookie…")
+        viewModelScope.launch {
+            val imported = cookiesManager.importCookies(rawCookie)
+            if (imported == 0) {
+                state = state.copy(
+                    uiState = LoginUiState.Failed,
+                    message = "Cookie 格式不正确，需形如 SESSDATA=xxx; bili_jct=yyy"
+                )
+                return@launch
+            }
+            // 校验凭证是否真的可用
+            val isLoggedIn = cn.spacexc.bilibilisdk.utils.UserUtils.isUserLoggedIn()
+            if (isLoggedIn) {
+                state = state.copy(uiState = LoginUiState.Success, message = "登录成功")
+            } else {
+                state = state.copy(
+                    uiState = LoginUiState.Failed,
+                    message = "Cookie 无效或已过期，请重新获取"
+                )
+            }
+        }
+    }
+
+    // --------------------------------------------------------------- 密码登录
+
+    fun loginByPassword(username: String, password: String) {
+        if (username.isBlank() || password.isBlank()) {
+            state = state.copy(uiState = LoginUiState.Failed, message = "账号和密码不能为空")
+            return
+        }
+        stopAllJobs()
+        state = state.copy(uiState = LoginUiState.Loading, message = "正在登录…")
+        viewModelScope.launch {
+            val webKey = loginApi.getWebKey()
+            val rsaKey = webKey?.data?.key
+            val salt = webKey?.data?.hash
+            if (rsaKey.isNullOrBlank() || salt.isNullOrBlank()) {
+                state = state.copy(
+                    uiState = LoginUiState.Failed,
+                    message = "获取加密公钥失败，请稍后重试"
+                )
+                return@launch
+            }
+            val result = loginApi.loginByPassword(
+                username = username,
+                password = password,
+                rsaKey = rsaKey,
+                salt = salt,
+                deviceId = ensureDeviceId(),
+                buvid = ensureBuvid()
+            )
+            handleLoginEnvelope(result?.code, result?.message, result?.data)
+        }
+    }
+
+    // --------------------------------------------------------------- 短信登录
+
+    fun sendSmsCode(tel: String) {
+        if (tel.isBlank() || tel.length < 11) {
+            state = state.copy(uiState = LoginUiState.Failed, message = "请输入正确的手机号")
+            return
+        }
+        if (state.smsCooldownSeconds > 0) return
+        state = state.copy(uiState = LoginUiState.SendingCode, message = "正在发送验证码…")
+        viewModelScope.launch {
+            val captchaKey = loginApi.getCaptchaKey()?.first.orEmpty()
+            val result = loginApi.sendSmsCode(
+                tel = tel,
+                cid = captchaKey.ifBlank { "0" },
+                buvid = ensureBuvid(),
+                deviceId = ensureDeviceId()
+            )
+            if (result == null || result.code != 0) {
+                state = state.copy(
+                    uiState = LoginUiState.Failed,
+                    message = result?.message ?: "验证码发送失败，可能需要人机验证"
+                )
+                return@launch
+            }
+            smsCaptchaKey = result.data?.captchaKey.orEmpty()
+            state = state.copy(
+                uiState = LoginUiState.CodeSent,
+                message = "验证码已发送",
+                smsCooldownSeconds = 60
+            )
+            startSmsCooldown()
+        }
+    }
+
+    private fun startSmsCooldown() {
+        smsCooldownJob?.cancel()
+        smsCooldownJob = viewModelScope.launch {
+            var left = 60
+            while (left > 0) {
+                delay(1000)
+                left--
+                state = state.copy(smsCooldownSeconds = left)
+            }
+        }
+    }
+
+    fun loginBySmsCode(tel: String, code: String) {
+        if (tel.isBlank() || code.isBlank()) {
+            state = state.copy(uiState = LoginUiState.Failed, message = "手机号和验证码不能为空")
+            return
+        }
+        stopAllJobs()
+        state = state.copy(uiState = LoginUiState.Loading, message = "正在登录…")
+        viewModelScope.launch {
+            val result = loginApi.loginBySmsCode(
+                tel = tel,
+                code = code,
+                captchaKey = smsCaptchaKey,
+                cid = smsCaptchaKey,
+                buvid = ensureBuvid(),
+                deviceId = ensureDeviceId()
+            )
+            handleLoginEnvelope(result?.code, result?.message, result?.data)
+        }
+    }
+
+    // ------------------------------------------------------------------ 公共出口
+
+    /**
+     * 统一处理登录响应。
+     *
+     * `status == 2` 表示触发风控需要手机号验证 —— 手表端无法走完整
+     * safeCenter 流程，这里给出明确提示并引导改用其他登录方式。
+     */
+    private suspend fun handleLoginEnvelope(
+        code: Int?,
+        message: String?,
+        data: LoginResultData?
+    ) {
+        if (code != 0) {
+            val hint = when (code) {
+                -629 -> "账号或密码错误"
+                -105 -> "该账号已开启二次验证，请使用其他方式登录"
+                -400 -> "请求参数错误"
+                -403 -> "账号被封禁或限制登录"
+                else -> message ?: "登录失败 ($code)"
+            }
+            state = state.copy(uiState = LoginUiState.Failed, message = hint)
+            return
+        }
+        if (data == null) {
+            state = state.copy(uiState = LoginUiState.Failed, message = "接口未返回数据")
+            return
+        }
+        if (data.status == 2) {
+            state = state.copy(
+                uiState = LoginUiState.Failed,
+                message = "本次登录环境存在风险，需使用手机号验证。请改用扫码或 Cookie 登录"
+            )
+            return
+        }
+        val cookies = data.cookieInfo?.cookies.orEmpty()
+        if (cookies.isEmpty()) {
+            state = state.copy(uiState = LoginUiState.Failed, message = "登录响应缺少凭证")
+            return
+        }
+        persistLoginCookies(cookies, data.refreshToken)
+    }
+
+    /** 唯一的凭证落盘出口：写 Cookie + 记录 uid + 刷新 token */
+    private suspend fun persistLoginCookies(
+        cookies: List<LoginCookie>,
+        refreshToken: String?
+    ) {
+        val raw = cookies.joinToString("; ") { "${it.name}=${it.value}" }
+        val imported = cookiesManager.importCookies(raw)
+        val uid = cookies.firstOrNull { it.name == "DedeUserID" }?.value?.toLongOrNull()
+        if (uid != null) {
+            cn.spacexc.bilibilisdk.utils.UserUtils.addUser(uid)
+            cn.spacexc.bilibilisdk.utils.UserUtils.setCurrentUid(uid)
+        }
+        if (!refreshToken.isNullOrBlank()) {
+            BilibiliSdkManager.dataManager.saveString("refreshToken", refreshToken)
+        }
+        if (imported > 0 && cn.spacexc.bilibilisdk.utils.UserUtils.isUserLoggedIn()) {
+            state = state.copy(uiState = LoginUiState.Success, message = "登录成功")
+        } else {
+            state = state.copy(
+                uiState = LoginUiState.Failed,
+                message = "凭证写入失败，请重试"
+            )
+        }
+    }
+
+    private fun stopAllJobs() {
+        pollJob?.cancel()
+        qrCodeExpireJob?.cancel()
+        smsCooldownJob?.cancel()
+    }
+
+    override fun onCleared() {
+        stopAllJobs()
+        super.onCleared()
+    }
+}
